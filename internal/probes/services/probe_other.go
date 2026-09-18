@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build !windows && !linux && !darwin
+// +build !windows,!linux,!darwin
 
 package services
 

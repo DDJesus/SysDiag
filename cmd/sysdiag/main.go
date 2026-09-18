@@ -26,11 +26,11 @@ import (
 	"github.com/systemdiag/sysdiag/internal/probes/software"
 	"github.com/systemdiag/sysdiag/internal/probes/storage"
 	"github.com/systemdiag/sysdiag/internal/probes/system"
+	"github.com/systemdiag/sysdiag/internal/platform"
 	htmlReporter "github.com/systemdiag/sysdiag/internal/reporter/html"
 	jsonReporter "github.com/systemdiag/sysdiag/internal/reporter/json"
 	termReporter "github.com/systemdiag/sysdiag/internal/reporter/terminal"
 	"github.com/systemdiag/sysdiag/internal/sanitizer"
-	"github.com/systemdiag/sysdiag/internal/winapi"
 )
 
 const (
@@ -81,10 +81,14 @@ func main() {
 	scanStartTime := time.Now()
 
 	// Privilege inspection
-	isElevated, _ := winapi.IsProcessElevated()
+	isElevated, _ := platform.IsProcessElevated()
 	privLevel := "User"
 	if isElevated {
-		privLevel = "Administrator"
+		if runtime.GOOS == "windows" {
+			privLevel = "Administrator"
+		} else {
+			privLevel = "Root"
+		}
 	}
 
 	execPath, err := os.Executable()
@@ -246,7 +250,7 @@ func main() {
 	fmt.Println("================================================================================")
 
 	// Check if we should pause for user acknowledgment (Mom Test double-click support)
-	isDoubleClicked := winapi.IsLaunchedFromExplorer()
+	isDoubleClicked := platform.IsLaunchedFromExplorer()
 	if *pauseFlag || isDoubleClicked {
 		fmt.Println("\nPress Enter to exit...")
 		bufio.NewReader(os.Stdin).ReadString('\n')

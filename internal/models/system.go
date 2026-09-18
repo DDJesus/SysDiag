@@ -22,12 +22,17 @@ type SystemMetrics struct {
 
 // CPUMetrics encapsulates processor topology and utilization measurements.
 type CPUMetrics struct {
-	Model              string  `json:"model"`
-	PhysicalCores      int     `json:"physical_cores"`
-	LogicalCores       int     `json:"logical_cores"`
-	UtilizationPercent float64 `json:"utilization_percent"`
-	UserPercent        float64 `json:"user_percent"`
-	KernelPercent      float64 `json:"kernel_percent"`
+	Model              string   `json:"model"`
+	PhysicalCores      int      `json:"physical_cores"`
+	LogicalCores       int      `json:"logical_cores"`
+	UtilizationPercent float64  `json:"utilization_percent"`
+	UserPercent        float64  `json:"user_percent"`
+	KernelPercent      float64  `json:"kernel_percent"`
+	IOWaitPercent      float64  `json:"iowait_percent,omitempty"`
+	StealPercent       float64  `json:"steal_percent,omitempty"`
+	Load1              *float64 `json:"load_1m,omitempty"`
+	Load5              *float64 `json:"load_5m,omitempty"`
+	Load15             *float64 `json:"load_15m,omitempty"`
 }
 
 // MemoryMetrics encapsulates physical and virtual memory usage telemetry.
@@ -39,6 +44,12 @@ type MemoryMetrics struct {
 	CommitLimitBytes uint64  `json:"commit_limit_bytes"`
 	CommitTotalBytes uint64  `json:"commit_total_bytes"`
 	CommitPercent    float64 `json:"commit_percent"`
+	CachedBytes      uint64  `json:"cached_bytes,omitempty"`
+	BuffersBytes     uint64  `json:"buffers_bytes,omitempty"`
+	SwapTotalBytes   uint64  `json:"swap_total_bytes,omitempty"`
+	SwapUsedBytes    uint64  `json:"swap_used_bytes,omitempty"`
+	SwapFreeBytes    uint64  `json:"swap_free_bytes,omitempty"`
+	SwapPercent      float64 `json:"swap_percent,omitempty"`
 }
 
 // DiagnosticData aggregates normalized subsystem models.

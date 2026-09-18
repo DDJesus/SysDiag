@@ -87,11 +87,30 @@ Every registered probe records an explicit execution status:
 
 ### 1. Building the Sysdiag CLI
 
-Compile a single, self-contained executable with zero runtime dependencies:
+Compile a single, self-contained executable with zero runtime dependencies. Sysdiag automatically detects the target OS and compiles with native probe implementations:
 
+#### Native Windows Build
 ```powershell
-# From repository root
+# Windows x64 binary
 go build -ldflags="-s -w" -o sysdiag.exe ./cmd/sysdiag
+```
+
+#### Cross-Platform Compilation Targets
+```bash
+# Linux amd64 (for Ubuntu / Debian / RHEL / Linux servers)
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o sysdiag_linux_amd64 ./cmd/sysdiag
+
+# Linux arm64 (for AWS Graviton / ARM servers / Raspberry Pi)
+GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o sysdiag_linux_arm64 ./cmd/sysdiag
+
+# macOS amd64 (Intel Mac)
+GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o sysdiag_darwin_amd64 ./cmd/sysdiag
+
+# macOS arm64 (Apple Silicon M1/M2/M3/M4)
+GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o sysdiag_darwin_arm64 ./cmd/sysdiag
+
+# Windows amd64 (from Linux/macOS host)
+GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o sysdiag_windows_amd64.exe ./cmd/sysdiag
 ```
 
 ### 2. Running Sysdiag Scans
@@ -176,7 +195,8 @@ python test_explorer.py
 │   ├── collector/          # Probe orchestration and execution engine
 │   ├── config/             # Scan profiles and runtime options
 │   ├── models/             # Canonical schema 1.0.0 data structures
-│   ├── probes/             # Domain probes (cpu, memory, network, etc.)
+│   ├── platform/           # Cross-platform host detection and privilege abstraction
+│   ├── probes/             # OS-specific domain probes (cpu, memory, storage, etc.)
 │   ├── reporter/           # Terminal, JSON, and standalone HTML generators
 │   ├── sanitizer/          # PII and sensitive identifier redaction
 │   └── winapi/             # Windows NT / Win32 syscall bindings

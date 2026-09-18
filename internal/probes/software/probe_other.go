@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build !windows && !linux && !darwin
+// +build !windows,!linux,!darwin
 
 package software
 
@@ -11,7 +11,7 @@ import (
 	"github.com/systemdiag/sysdiag/internal/models"
 )
 
-func (p *Probe) collect(ctx context.Context, sampleDuration time.Duration) (interface{}, collector.ProbeStatus, error) {
+func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
 	return &models.SoftwareMetrics{
 		TotalInstalledApps: 0,
 		Applications:       make([]models.InstalledApp, 0),
