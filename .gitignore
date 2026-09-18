@@ -1,0 +1,35 @@
+# Binaries & build outputs
+*.exe
+*.dll
+*.so
+*.dylib
+*.zip
+*.tar.gz
+*.bin
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Local IDE & Editor configurations
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Diagnostic scan output artifacts generated on local test runs (preserve test/fixtures/ and web/samples/)
+/sysdiag_report_*.json
+/sysdiag_report_*.html
+
+# Temporary scratch directories and logs
+tmp/
+temp/
+*.log
+.output.txt

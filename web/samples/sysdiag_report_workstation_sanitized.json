@@ -1,0 +1,3796 @@
+{
+  "$schema": "https://systemdiag.io/schema/v1.json",
+  "schema_version": "1.0.0",
+  "metadata": {
+    "tool_version": "1.0.0",
+    "scan_timestamp": "2026-09-17T15:15:12.7921855Z",
+    "scan_duration_ms": 301,
+    "profile": "quick",
+    "hostname": "WORKSTATION-01",
+    "os": "windows",
+    "os_version": "Windows 10 Home",
+    "architecture": "amd64",
+    "privilege_level": "User",
+    "is_elevated": false,
+    "execution_path": "C:\\sysdiag\\sysdiag.exe",
+    "output_directory": "C:\\sysdiag"
+  },
+  "collection_status": {
+    "total_probes": 9,
+    "successful": 9,
+    "partial": 0,
+    "requires_admin": 0,
+    "unsupported": 0,
+    "failed": 0,
+    "timeout": 0,
+    "probes": [
+      {
+        "probe_id": "probe_system",
+        "category": "system",
+        "name": "System Identity & Environment Probe",
+        "status": "Success",
+        "duration_ms": 22
+      },
+      {
+        "probe_id": "probe_cpu",
+        "category": "cpu",
+        "name": "Processor & CPU Utilization Probe",
+        "status": "Success",
+        "duration_ms": 45
+      },
+      {
+        "probe_id": "probe_memory",
+        "category": "memory",
+        "name": "Memory & Commit Charge Probe",
+        "status": "Success",
+        "duration_ms": 18
+      },
+      {
+        "probe_id": "probe_storage",
+        "category": "storage",
+        "name": "Storage & Disk Geometry Probe",
+        "status": "Success",
+        "duration_ms": 36
+      },
+      {
+        "probe_id": "probe_network",
+        "category": "network",
+        "name": "Network Adapters & Connectivity Probe",
+        "status": "Success",
+        "duration_ms": 42
+      },
+      {
+        "probe_id": "probe_process",
+        "category": "processes",
+        "name": "Processes & Resource Consumers Probe",
+        "status": "Success",
+        "duration_ms": 50
+      },
+      {
+        "probe_id": "probe_services",
+        "category": "services",
+        "name": "Windows Services & Daemons Probe",
+        "status": "Success",
+        "duration_ms": 38
+      },
+      {
+        "probe_id": "probe_reliability",
+        "category": "reliability",
+        "name": "System Reliability & Event Log Probe",
+        "status": "Success",
+        "duration_ms": 28
+      },
+      {
+        "probe_id": "probe_software",
+        "category": "software",
+        "name": "Installed Software & Runtimes Probe",
+        "status": "Success",
+        "duration_ms": 22
+      }
+    ]
+  },
+  "data": {
+    "system": {
+      "hostname": "WORKSTATION-01",
+      "os_name": "Windows 10 Home",
+      "os_version": "25H2",
+      "os_build": "10.0.26200",
+      "architecture": "amd64",
+      "uptime_seconds": 36901,
+      "boot_time": "2026-09-17T05:00:11Z",
+      "virtualization": {
+        "is_virtual": false
+      }
+    },
+    "cpu": {
+      "model": "Intel(R) Core(TM) i7-14700F",
+      "physical_cores": 14,
+      "logical_cores": 28,
+      "utilization_percent": 4,
+      "user_percent": 3,
+      "kernel_percent": 1
+    },
+    "memory": {
+      "total_bytes": 17020518400,
+      "available_bytes": 2152357888,
+      "used_bytes": 14868160512,
+      "used_percent": 87.4,
+      "commit_limit_bytes": 29905420288,
+      "commit_total_bytes": 24599851008,
+      "commit_percent": 82.3
+    },
+    "storage": {
+      "volumes": [
+        {
+          "mount_point": "C:\\",
+          "volume_name": "Windows",
+          "filesystem": "NTFS",
+          "drive_type": "Fixed",
+          "total_bytes": 999242592256,
+          "free_bytes": 254979432448,
+          "used_bytes": 744263159808,
+          "used_percent": 74.5
+        }
+      ],
+      "physical_disks": [
+        {
+          "device_id": "\\\\.\\PhysicalDrive0",
+          "model": "ADATA LEGEND 800 GOLD",
+          "media_type": "Fixed Disk",
+          "bus_type": "NVMe",
+          "serial_number": "DISK_SERIAL_001"
+        }
+      ]
+    },
+    "network": {
+      "adapters": [
+        {
+          "id": "{5B6D35BF-4F9D-49BD-B9D7-35650A5C097B}",
+          "name": "Ethernet",
+          "description": "Realtek Gaming 2.5GbE Family Controller",
+          "mac_address": "00:11:22:33:44:01",
+          "status": "Down",
+          "if_type": "Ethernet",
+          "speed_mbps": null,
+          "ipv4_addresses": [
+            "10.0.1.10"
+          ],
+          "ipv6_addresses": [
+            "fe80:0:0:0:37fd:833:9f77:3069"
+          ],
+          "dns_servers": [
+            "10.0.1.1",
+            "1.1.1.1"
+          ],
+          "dhcp_enabled": true,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{BEDB9F20-3776-4E83-96EB-51BE631FCACA}",
+          "name": "Local Area Connection* 1",
+          "description": "Microsoft Wi-Fi Direct Virtual Adapter",
+          "mac_address": "00:11:22:33:44:02",
+          "status": "Down",
+          "if_type": "Wi-Fi",
+          "speed_mbps": null,
+          "ipv4_addresses": [
+            "10.0.1.11"
+          ],
+          "ipv6_addresses": [
+            "fe80:0:0:0:a9dd:8c07:5d54:7fea"
+          ],
+          "dns_servers": [
+            "10.0.1.1",
+            "1.1.1.1"
+          ],
+          "dhcp_enabled": true,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{A7FB5653-0A58-4B22-9E0B-8AAEE12DDF99}",
+          "name": "Local Area Connection* 2",
+          "description": "Microsoft Wi-Fi Direct Virtual Adapter #2",
+          "mac_address": "00:11:22:33:44:03",
+          "status": "Down",
+          "if_type": "Wi-Fi",
+          "speed_mbps": null,
+          "ipv4_addresses": [
+            "10.0.1.12"
+          ],
+          "ipv6_addresses": [
+            "fe80:0:0:0:2477:fa0b:d3a5:1e1b"
+          ],
+          "dns_servers": [
+            "10.0.1.1",
+            "1.1.1.1"
+          ],
+          "dhcp_enabled": false,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{2365B45E-078C-4822-925B-9CE8F5536419}",
+          "name": "Wi-Fi",
+          "description": "Realtek 8852CE WiFi 6E PCI-E NIC",
+          "mac_address": "00:11:22:33:44:04",
+          "status": "Up",
+          "if_type": "Wi-Fi",
+          "speed_mbps": 1201,
+          "ipv4_addresses": [
+            "10.0.1.13"
+          ],
+          "ipv6_addresses": [
+            "2600:6c5e:45f0:bb10:0:0:0:14e9",
+            "2600:6c5e:45f0:bb10:4947:7e0e:fccf:1bb6",
+            "fd00:2cea:dc7b:5d04:ebfe:c7d0:a6f3:30ad",
+            "2600:6c5e:45f0:bb10:6856:17f3:be2b:2bf8",
+            "fd00:2cea:dc7b:5d04:6856:17f3:be2b:2bf8",
+            "fe80:0:0:0:ac56:2cc4:a7e7:657f"
+          ],
+          "gateways": [
+            "fe80:0:0:0:2eea:dcff:fe7b:5d04",
+            "10.0.1.100"
+          ],
+          "dns_servers": [
+            "10.0.1.1",
+            "1.1.1.1"
+          ],
+          "dhcp_enabled": true,
+          "in_octets": 1693515147,
+          "out_octets": 884112204,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{7D69EA9D-E865-4B96-A972-312D43EB2ECD}",
+          "name": "Bluetooth Network Connection",
+          "description": "Bluetooth Device (Personal Area Network)",
+          "mac_address": "00:11:22:33:44:05",
+          "status": "Down",
+          "if_type": "Ethernet",
+          "speed_mbps": null,
+          "ipv4_addresses": [
+            "10.0.1.14"
+          ],
+          "ipv6_addresses": [
+            "fe80:0:0:0:acf3:3176:79:f141"
+          ],
+          "dns_servers": [
+            "10.0.1.1",
+            "1.1.1.1"
+          ],
+          "dhcp_enabled": true,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{9629B7BD-4398-11EF-B0C6-806E6F6E6963}",
+          "name": "Loopback Pseudo-Interface 1",
+          "description": "Software Loopback Interface 1",
+          "status": "Up",
+          "if_type": "Loopback",
+          "speed_mbps": 1073,
+          "ipv4_addresses": [
+            "10.0.1.15"
+          ],
+          "ipv6_addresses": [
+            "0:0:0:0:0:0:0:1"
+          ],
+          "dns_servers": [
+            "10.0.1.1",
+            "1.1.1.1"
+          ],
+          "dhcp_enabled": false,
+          "in_errors": 0,
+          "out_errors": 0
+        }
+      ],
+      "dns_test": {
+        "query_target": "WORKSTATION-01",
+        "duration_ms": 5.366,
+        "success": true,
+        "resolved_ips": [
+          "10.0.1.50"
+        ]
+      }
+    },
+    "processes": {
+      "total_processes": 292,
+      "total_threads": 6536,
+      "top_cpu": [
+        {
+          "pid": 25120,
+          "ppid": 9972,
+          "name": "OneDrive.Sync.Service.exe",
+          "executable_path": "C:\\Users\\[REDACTED]\\AppData\\Local\\Microsoft\\OneDrive\\26.158.0816.0003\\OneDrive.Sync.Service.exe",
+          "thread_count": 31,
+          "working_set_bytes": 36855808,
+          "private_bytes": 137211904,
+          "cpu_time_seconds": 1504.8,
+          "start_time": "2026-09-17T12:31:23.8631218Z"
+        },
+        {
+          "pid": 7352,
+          "ppid": 23388,
+          "name": "ChatGPT.exe",
+          "executable_path": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.911.7940.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+          "thread_count": 69,
+          "working_set_bytes": 179118080,
+          "private_bytes": 355962880,
+          "cpu_time_seconds": 972,
+          "start_time": "2026-09-17T09:50:09.2217123Z"
+        },
+        {
+          "pid": 18868,
+          "ppid": 23388,
+          "name": "ChatGPT.exe",
+          "executable_path": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.911.7940.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+          "thread_count": 39,
+          "working_set_bytes": 785248256,
+          "private_bytes": 806436864,
+          "cpu_time_seconds": 865.9,
+          "start_time": "2026-09-17T09:50:17.103819Z"
+        },
+        {
+          "pid": 19484,
+          "ppid": 8372,
+          "name": "firefox.exe",
+          "executable_path": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+          "thread_count": 44,
+          "working_set_bytes": 236900352,
+          "private_bytes": 278515712,
+          "cpu_time_seconds": 773,
+          "start_time": "2026-09-17T09:50:08.493703Z"
+        },
+        {
+          "pid": 22548,
+          "ppid": 20316,
+          "name": "Spotify.exe",
+          "executable_path": "C:\\Program Files\\WindowsApps\\SpotifyAB.SpotifyMusic_1.300.277.0_x64__zpdnekdrzrea0\\Spotify.exe",
+          "thread_count": 43,
+          "working_set_bytes": 361902080,
+          "private_bytes": 347422720,
+          "cpu_time_seconds": 712.3,
+          "start_time": "2026-09-17T09:49:59.9361367Z"
+        }
+      ],
+      "top_memory": [
+        {
+          "pid": 12100,
+          "ppid": 8204,
+          "name": "pycharm64.exe",
+          "executable_path": "C:\\Program Files\\JetBrains\\PyCharm 2026.1.4\\bin\\pycharm64.exe",
+          "thread_count": 235,
+          "working_set_bytes": 2442391552,
+          "private_bytes": 2077351936,
+          "cpu_time_seconds": 98,
+          "start_time": "2026-09-17T15:12:50.3949339Z"
+        },
+        {
+          "pid": 18868,
+          "ppid": 23388,
+          "name": "ChatGPT.exe",
+          "executable_path": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.911.7940.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+          "thread_count": 39,
+          "working_set_bytes": 785248256,
+          "private_bytes": 806436864,
+          "cpu_time_seconds": 865.9,
+          "start_time": "2026-09-17T09:50:17.103819Z"
+        },
+        {
+          "pid": 22676,
+          "ppid": 8372,
+          "name": "firefox.exe",
+          "executable_path": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+          "thread_count": 34,
+          "working_set_bytes": 532729856,
+          "private_bytes": 1034117120,
+          "cpu_time_seconds": 172.6,
+          "start_time": "2026-09-17T13:00:57.8178578Z"
+        },
+        {
+          "pid": 8204,
+          "ppid": 1088,
+          "name": "explorer.exe",
+          "executable_path": "C:\\Windows\\explorer.exe",
+          "thread_count": 278,
+          "working_set_bytes": 480284672,
+          "private_bytes": 585519104,
+          "cpu_time_seconds": 150.1,
+          "start_time": "2026-09-17T09:48:57.9303343Z"
+        },
+        {
+          "pid": 8372,
+          "ppid": 20852,
+          "name": "firefox.exe",
+          "executable_path": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+          "thread_count": 86,
+          "working_set_bytes": 468164608,
+          "private_bytes": 440389632,
+          "cpu_time_seconds": 559.4,
+          "start_time": "2026-09-17T09:50:08.2139093Z"
+        }
+      ]
+    },
+    "services": {
+      "total_count": 297,
+      "running_count": 126,
+      "stopped_count": 171,
+      "failed_auto_start_count": 5,
+      "failed_auto_start": [
+        {
+          "name": "gpsvc",
+          "display_name": "Group Policy Client",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "%windir%\\system32\\svchost.exe -k GPSvcGroup",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Intel(R) Platform License Manager Service",
+          "display_name": "Intel(R) Platform License Manager Service",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "%SystemRoot%\\System32\\DriverStore\\FileRepository\\iclsclient.inf_amd64_fc84dfa25a6a7727\\lib\\PlatformLicenseManagerService.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "MapsBroker",
+          "display_name": "Downloaded Maps Manager",
+          "status": "Stopped",
+          "start_type": "Auto (Delayed)",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "sppsvc",
+          "display_name": "Software Protection",
+          "status": "Stopped",
+          "start_type": "Auto (Delayed)",
+          "binary_path": "%SystemRoot%\\system32\\sppsvc.exe",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "StiSvc",
+          "display_name": "Windows Image Acquisition (WIA)",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k imgsvc",
+          "account": "NT Authority\\LocalService"
+        }
+      ],
+      "services": [
+        {
+          "name": "ADPSvc",
+          "display_name": "Aggregated Data Platform Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceAndNoImpersonation -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "ALG",
+          "display_name": "Application Layer Gateway Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\alg.exe",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "AppIDSvc",
+          "display_name": "Application Identity",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1384,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "Appinfo",
+          "display_name": "Application Information",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "AppReadiness",
+          "display_name": "App Readiness",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k AppReadiness -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "AppXSvc",
+          "display_name": "AppX Deployment Service (AppXSVC)",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 14388,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k wsappx -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "ApxSvc",
+          "display_name": "Windows Virtual Audio Device Proxy Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "AudioEndpointBuilder",
+          "display_name": "Windows Audio Endpoint Builder",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Audiosrv",
+          "display_name": "Windows Audio",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2932,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "autotimesvc",
+          "display_name": "Cellular Time",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k autoTimeSvc",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "AxInstSV",
+          "display_name": "ActiveX Installer (AxInstSV)",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k AxInstSVGroup",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "battlenet_helpersvc",
+          "display_name": "Battle.net Update Helper Svc",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\ProgramData\\Battle.net_components\\battlenet_helpersvc\\AgentHelper.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "BDESVC",
+          "display_name": "BitLocker Drive Encryption Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "localSystem"
+        },
+        {
+          "name": "BEService",
+          "display_name": "BattlEye Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Common Files\\BattlEye\\BEService.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "BFE",
+          "display_name": "Base Filtering Engine",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3336,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalServiceNoNetworkFirewall -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "BITS",
+          "display_name": "Background Intelligent Transfer Service",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "BrokerInfrastructure",
+          "display_name": "Background Tasks Infrastructure Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "BTAGService",
+          "display_name": "Bluetooth Audio Gateway Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2020,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "BthAvctpSvc",
+          "display_name": "AVCTP service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2032,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceRedirectionGuard -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "bthserv",
+          "display_name": "Bluetooth Support Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2016,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "camsvc",
+          "display_name": "Capability Access Manager Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 7220,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k osprivacy -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "CDPSvc",
+          "display_name": "Connected Devices Platform Service",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 2016,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "CertPropSvc",
+          "display_name": "Certificate Propagation",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "ClickToRunSvc",
+          "display_name": "Microsoft Office Click-to-Run Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4172,
+          "binary_path": "\"C:\\Program Files\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe\" /service",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "ClipSVC",
+          "display_name": "Client License Service (ClipSVC)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k wsappx -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "COMSysApp",
+          "display_name": "COM+ System Application",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\dllhost.exe /Processid:{02D4B3F1-FD88-11D1-960D-00805FC79235}",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "CoreMessagingRegistrar",
+          "display_name": "CoreMessaging",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2296,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNoNetwork -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "CortexLauncherService",
+          "display_name": "CortexLauncherService",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3844,
+          "binary_path": "\"C:\\Program Files (x86)\\Razer\\Razer Cortex\\CortexLauncherService.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "CoworkVMService",
+          "display_name": "Claude",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 7308,
+          "binary_path": "\"C:\\Program Files\\WindowsApps\\Claude_1.6608.0.0_x64__pzs8sxrjxfjjc\\app\\resources\\cowork-svc.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "CryptSvc",
+          "display_name": "Cryptographic Services",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1948,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k NetworkService -p",
+          "account": "NT Authority\\NetworkService"
+        },
+        {
+          "name": "DcomLaunch",
+          "display_name": "DCOM Server Process Launcher",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "dcsvc",
+          "display_name": "Declared Configuration(DC) service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "defragsvc",
+          "display_name": "Optimize drives",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k defragsvc",
+          "account": "localSystem"
+        },
+        {
+          "name": "DeviceAssociationService",
+          "display_name": "Device Association Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "DeviceInstall",
+          "display_name": "Device Install Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "DevQueryBroker",
+          "display_name": "DevQuery Background Discovery Broker",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Dhcp",
+          "display_name": "DHCP Client",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 940,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "diagsvc",
+          "display_name": "Diagnostic Execution Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k diagnostics",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "DiagTrack",
+          "display_name": "Connected User Experiences and Telemetry",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3712,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k utcsvc -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "DispBrokerDesktopSvc",
+          "display_name": "Display Policy Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2016,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "DisplayEnhancementService",
+          "display_name": "Display Enhancement Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "DmEnrollmentSvc",
+          "display_name": "Device Management Enrollment Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "dmwappushservice",
+          "display_name": "Device Management Wireless Application Protocol (WAP) Push message Routing Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "Dnscache",
+          "display_name": "DNS Client",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2572,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "DoSvc",
+          "display_name": "Delivery Optimization",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 1328,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService -p",
+          "account": "NT Authority\\NetworkService"
+        },
+        {
+          "name": "dot3svc",
+          "display_name": "Wired AutoConfig",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "DPS",
+          "display_name": "Diagnostic Policy Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2296,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNoNetwork -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "DsmSvc",
+          "display_name": "Device Setup Manager",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "DsSvc",
+          "display_name": "Data Sharing Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "DusmSvc",
+          "display_name": "Data Usage",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2556,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted -p -s DusmSvc",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "EapHost",
+          "display_name": "Extensible Authentication Protocol",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "EasyAntiCheat_EOS",
+          "display_name": "Easy Anti-Cheat (Epic Online Services)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\EasyAntiCheat_EOS\\EasyAntiCheat_EOS.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "edgeupdate",
+          "display_name": "Microsoft Edge Update Service (edgeupdate)",
+          "status": "Stopped",
+          "start_type": "Auto (Delayed)",
+          "binary_path": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /svc",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "edgeupdatem",
+          "display_name": "Microsoft Edge Update Service (edgeupdatem)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /medsvc",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "EFS",
+          "display_name": "Encrypting File System (EFS)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\lsass.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "embeddedmode",
+          "display_name": "Embedded Mode",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "EntAppSvc",
+          "display_name": "Enterprise App Management Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k appmodelRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "EpicGamesUpdater",
+          "display_name": "Epic Games Updater",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files\\Epic Games\\Launcher\\Portal\\Binaries\\Win64\\EpicGamesUpdater.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "EpicOnlineServices",
+          "display_name": "Epic Online Services",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Epic Games\\Epic Online Services\\service\\EpicOnlineServicesHost.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "EventLog",
+          "display_name": "Windows Event Log",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 940,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "EventSystem",
+          "display_name": "COM+ Event System",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2032,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceRedirectionGuard -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "fdPHost",
+          "display_name": "Function Discovery Provider Host",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "FDResPub",
+          "display_name": "Function Discovery Resource Publication",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceAndNoImpersonation -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "fhsvc",
+          "display_name": "File History Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "FontCache",
+          "display_name": "Windows Font Cache Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2016,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "FontCache3.0.0.0",
+          "display_name": "Windows Presentation Foundation Font Cache 3.0.0.0",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\Microsoft.Net\\Framework64\\v3.0\\WPF\\PresentationFontCache.exe",
+          "account": "NT Authority\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "FrameServer",
+          "display_name": "Windows Camera Frame Server",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k Camera",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "FrameServerMonitor",
+          "display_name": "Windows Camera Frame Server Monitor",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k CameraMonitor",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Futuremark SystemInfo Service",
+          "display_name": "Futuremark SystemInfo Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Futuremark\\SystemInfo\\FMSISvc.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "FvSvc",
+          "display_name": "NVIDIA FrameView SDK service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files\\NVIDIA Corporation\\FrameViewSDK\\nvfvsdksvc_x64.exe\" -service",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "GameInputRedistService",
+          "display_name": "GameInput Redist Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3876,
+          "binary_path": "\"C:\\Program Files\\Microsoft GameInput\\x64\\GameInputRedistService.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "GameInputSvc",
+          "display_name": "GameInput Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 8972,
+          "binary_path": "%SystemRoot%\\System32\\GameInputSvc.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "GamingServices",
+          "display_name": "Gaming Services",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 7316,
+          "binary_path": "\"C:\\Program Files\\WindowsApps\\Microsoft.GamingServices_38.116.6003.0_x64__8wekyb3d8bbwe\\GamingServices.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "GamingServicesNet",
+          "display_name": "Gaming Services",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 7324,
+          "binary_path": "\"C:\\Program Files\\WindowsApps\\Microsoft.GamingServices_38.116.6003.0_x64__8wekyb3d8bbwe\\GamingServicesNet.exe\"",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "GoogleChromeElevationService",
+          "display_name": "Google Chrome Elevation Service (GoogleChromeElevationService)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files\\Google\\Chrome\\Application\\153.0.8010.47\\elevation_service.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "GoogleUpdaterInternalService152.0.7933.0",
+          "display_name": "Google Updater Internal Service (GoogleUpdaterInternalService152.0.7933.0)",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "\"C:\\Program Files (x86)\\Google\\GoogleUpdater\\152.0.7933.0\\updater.exe\" --system --windows-service --service=update-internal",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "GoogleUpdaterService152.0.7933.0",
+          "display_name": "Google Updater Service (GoogleUpdaterService152.0.7933.0)",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "\"C:\\Program Files (x86)\\Google\\GoogleUpdater\\152.0.7933.0\\updater.exe\" --system --windows-service --service=update",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "gpsvc",
+          "display_name": "Group Policy Client",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "%windir%\\system32\\svchost.exe -k GPSvcGroup",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "GraphicsPerfSvc",
+          "display_name": "GraphicsPerfSvc",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k GraphicsPerfSvcGroup",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "HapticService",
+          "display_name": "Haptic Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3904,
+          "binary_path": "\"C:\\Program Files (x86)\\Interhaptics\\HapticService\\HapticService.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "hidserv",
+          "display_name": "Human Interface Device Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "hns",
+          "display_name": "Host Network Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2376,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k NetSvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "hpatchmon",
+          "display_name": "Hotpatch Monitoring Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "HvHost",
+          "display_name": "HV Host Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "icssvc",
+          "display_name": "Windows Mobile Hotspot Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT Authority\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "IKEEXT",
+          "display_name": "IKE and AuthIP IPsec Keying Modules",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "InstallService",
+          "display_name": "Microsoft Store Install Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 8292,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Intel(R) Platform License Manager Service",
+          "display_name": "Intel(R) Platform License Manager Service",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "%SystemRoot%\\System32\\DriverStore\\FileRepository\\iclsclient.inf_amd64_fc84dfa25a6a7727\\lib\\PlatformLicenseManagerService.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "InventorySvc",
+          "display_name": "Inventory and Compatibility Appraisal service",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 2328,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k InvSvcGroup -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "iphlpsvc",
+          "display_name": "IP Helper",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetSvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "IpxlatCfgSvc",
+          "display_name": "IP Translation Configuration Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "IsoEnvBroker",
+          "display_name": "Isolation Environment Broker",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k IsoEnvBroker -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "IsolationSession",
+          "display_name": "IsolationSession",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k IsolationSession -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "jhi_service",
+          "display_name": "Intel(R) Dynamic Application Loader Host Interface Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3972,
+          "binary_path": "%SystemRoot%\\System32\\DriverStore\\FileRepository\\dal.inf_amd64_af50fdb80983f7bc\\jhi_service.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "KeyIso",
+          "display_name": "CNG Key Isolation",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1480,
+          "binary_path": "%SystemRoot%\\system32\\lsass.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "KtmRm",
+          "display_name": "KtmRm for Distributed Transaction Coordinator",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkServiceAndNoImpersonation -p",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "LanmanServer",
+          "display_name": "Server",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "LanmanWorkstation",
+          "display_name": "Workstation",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3616,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "lfsvc",
+          "display_name": "Geolocation Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2624,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcsRedirectionGuard -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "LGHUBUpdaterService",
+          "display_name": "LGHUB Updater Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4064,
+          "binary_path": "\"C:\\Program Files\\LGHUB\\lghub_updater.exe\" --run-as-service",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "LicenseManager",
+          "display_name": "Windows License Manager Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2016,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalService -p",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "lltdsvc",
+          "display_name": "Link-Layer Topology Discovery Mapper",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "lmhosts",
+          "display_name": "TCP/IP NetBIOS Helper",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 940,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "LocalKdc",
+          "display_name": "Kerberos Local Key Distribution Center",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\lsass.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "LSM",
+          "display_name": "Local Session Manager",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "LxpSvc",
+          "display_name": "Language Experience Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "MapsBroker",
+          "display_name": "Downloaded Maps Manager",
+          "status": "Stopped",
+          "start_type": "Auto (Delayed)",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "McmSvc",
+          "display_name": "Mobile Connectivity Management Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k McmSvc -p -s McmSvc",
+          "account": "NT SERVICE\\McmSvc",
+          "exit_code": 1077
+        },
+        {
+          "name": "McpManagementService",
+          "display_name": "McpManagementService",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k McpManagementServiceGroup",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "MDCoreSvc",
+          "display_name": "Microsoft Defender Core Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3896,
+          "binary_path": "\"%ProgramFiles%\\Windows Defender\\MpDefenderCoreService.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "MicrosoftCopilotElevationService",
+          "display_name": "Microsoft Copilot Elevation Service (MicrosoftCopilotElevationService)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Microsoft\\Copilot\\Application\\153.0.4234.42\\elevation_service.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "MicrosoftEdgeElevationService",
+          "display_name": "Microsoft Edge Elevation Service (MicrosoftEdgeElevationService)",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\153.0.4234.32\\elevation_service.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "midisrv",
+          "display_name": "Windows MIDI Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\midisrv.exe",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "MozillaMaintenance",
+          "display_name": "Mozilla Maintenance Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Mozilla Maintenance Service\\maintenanceservice.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "mpssvc",
+          "display_name": "Windows Defender Firewall",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3336,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNoNetworkFirewall -p",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "MSDTC",
+          "display_name": "Distributed Transaction Coordinator",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\msdtc.exe",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "MSiSCSI",
+          "display_name": "Microsoft iSCSI Initiator Service",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "msiserver",
+          "display_name": "Windows Installer",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\msiexec.exe /V",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "MSI_Case_Service",
+          "display_name": "MSI_Case_Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3916,
+          "binary_path": "\"C:\\Program Files (x86)\\MSI\\MSI Center\\Case\\MSI_Case_Service.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "MSI_Center_Service",
+          "display_name": "MSI Center Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3984,
+          "binary_path": "\"C:\\Program Files (x86)\\MSI\\MSI Center\\MSI_Central_Service.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "NaturalAuthentication",
+          "display_name": "Natural Authentication",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "NcaSvc",
+          "display_name": "Network Connectivity Assistant",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetSvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "NcbService",
+          "display_name": "Network Connection Broker",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "NcdAutoSetup",
+          "display_name": "Network Connected Devices Auto-Setup",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNoNetwork -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "Netlogon",
+          "display_name": "Netlogon",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\lsass.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "Netman",
+          "display_name": "Network Connections",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "netprofm",
+          "display_name": "Network List Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2176,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netprofm -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "NetSetupSvc",
+          "display_name": "Network Setup Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "NetTcpPortSharing",
+          "display_name": "Net.Tcp Port Sharing Service",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%systemroot%\\Microsoft.NET\\Framework64\\v4.0.30319\\SMSvcHost.exe",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "NgcCtnrSvc",
+          "display_name": "Microsoft Passport Container",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 8396,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "NgcSvc",
+          "display_name": "Microsoft Passport",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "NlaSvc",
+          "display_name": "Network Location Awareness",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netprofm -p",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "nsi",
+          "display_name": "Network Store Interface Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2016,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "nvagent",
+          "display_name": "Network Virtualization Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 3176,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k NetSvcs",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "NvContainerLocalSystem",
+          "display_name": "NVIDIA LocalSystem Container",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3884,
+          "binary_path": "\"C:\\Program Files\\NVIDIA Corporation\\NvContainer\\nvcontainer.exe\" -s NvContainerLocalSystem -a -f \"C:\\ProgramData\\NVIDIA Corporation\\NVIDIA App\\NvContainer\\NvContainerLocalSystem.log\" -l 3 -d \"C:\\Program Files\\NVIDIA Corporation\\NvContainer\\plugins\\LocalSystem\" -r -p 30000  -ert",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "NVDisplay.ContainerLocalSystem",
+          "display_name": "NVIDIA Display Container LS",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2320,
+          "binary_path": "C:\\Windows\\System32\\DriverStore\\FileRepository\\nv_dispig.inf_amd64_f4c7a2fd13e0f763\\Display.NvContainer\\NVDisplay.Container.exe -s NVDisplay.ContainerLocalSystem -f %ProgramData%\\NVIDIA\\NVDisplay.ContainerLocalSystem.log -l 3 -d C:\\Windows\\System32\\DriverStore\\FileRepository\\nv_dispig.inf_amd64_f4c7a2fd13e0f763\\Display.NvContainer\\plugins\\LocalSystem -r -p 30000 -cfg NVDisplay.ContainerLocalSystem\\LocalSystem /ert",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "PcaSvc",
+          "display_name": "Program Compatibility Assistant Service",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 1904,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "perceptionsimulation",
+          "display_name": "Windows Perception Simulation Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\PerceptionSimulation\\PerceptionSimulationService.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "PerfHost",
+          "display_name": "Performance Counter DLL Host",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\SysWow64\\perfhost.exe",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "PhoneSvc",
+          "display_name": "Phone Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT Authority\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "pla",
+          "display_name": "Performance Logs & Alerts",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNoNetwork -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "PlugPlay",
+          "display_name": "Plug and Play",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "PolicyAgent",
+          "display_name": "IPsec Policy Agent",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 7744,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k NetworkServiceNetworkRestricted -p",
+          "account": "NT Authority\\NetworkService"
+        },
+        {
+          "name": "Power",
+          "display_name": "Power",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "PrintDeviceConfigurationService",
+          "display_name": "Print Device Configuration Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "PrintNotify",
+          "display_name": "Printer Extensions and Notifications",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k print",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "PrintScanBrokerService",
+          "display_name": "PrintScanBrokerService",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k PrintScanBrokerService -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "ProfSvc",
+          "display_name": "User Profile Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2248,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k UserProfileService -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "PushToInstall",
+          "display_name": "Windows PushToInstall Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "QWAVE",
+          "display_name": "Quality Windows Audio Video Experience",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 15612,
+          "binary_path": "%windir%\\system32\\svchost.exe -k LocalServiceAndNoImpersonation -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "RasAuto",
+          "display_name": "Remote Access Auto Connection Manager",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "RasMan",
+          "display_name": "Remote Access Connection Manager",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 3176,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs",
+          "account": "localSystem"
+        },
+        {
+          "name": "Razer Chroma SDK Server",
+          "display_name": "Razer Chroma SDK Server",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4020,
+          "binary_path": "\"C:\\Program Files (x86)\\Razer Chroma SDK\\bin\\RzSDKServer.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Razer Chroma SDK Service",
+          "display_name": "Razer Chroma SDK Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4012,
+          "binary_path": "\"C:\\Program Files (x86)\\Razer Chroma SDK\\bin\\RzSDKService.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Razer Chroma Stream Server",
+          "display_name": "Razer Chroma Stream Server",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 4048,
+          "binary_path": "\"C:\\Program Files (x86)\\Razer Chroma SDK\\bin\\RzChromaStreamServer.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Razer Elevation Service",
+          "display_name": "Razer Elevation Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 21120,
+          "binary_path": "\"C:\\Program Files\\Razer\\razer_elevation_service\\razer_elevation_service.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Razer Game Manager Service 3",
+          "display_name": "Razer Game Manager Service 3",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3964,
+          "binary_path": "\"C:\\Program Files (x86)\\Razer\\Razer Services\\GMS3\\GameManagerService3.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "refsdedupsvc",
+          "display_name": "ReFS Dedup Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\ReFsDedupSvc.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "RemoteAccess",
+          "display_name": "Routing and Remote Access",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "RemoteRegistry",
+          "display_name": "Remote Registry",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k localService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "RetailDemo",
+          "display_name": "Retail Demo Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k rdxgroup",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "RmSvc",
+          "display_name": "Radio Management Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2020,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "RpcEptMapper",
+          "display_name": "RPC Endpoint Mapper",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1736,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k RPCSS -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "RpcLocator",
+          "display_name": "Remote Procedure Call (RPC) Locator",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\locator.exe",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "RpcSs",
+          "display_name": "Remote Procedure Call (RPC)",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1736,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k rpcss -p",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "RzActionSvc",
+          "display_name": "Razer Central Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3924,
+          "binary_path": "\"C:\\Program Files (x86)\\Razer\\Razer Services\\Razer Central\\RazerCentralService.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SamSs",
+          "display_name": "Security Accounts Manager",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1480,
+          "binary_path": "%SystemRoot%\\system32\\lsass.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SCardSvr",
+          "display_name": "Smart Card",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceAndNoImpersonation",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "ScDeviceEnum",
+          "display_name": "Smart Card Device Enumeration Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "Schedule",
+          "display_name": "Task Scheduler",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SCPolicySvc",
+          "display_name": "Smart Card Removal Policy",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "SDRSVC",
+          "display_name": "Windows Backup",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k SDRSVC",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "seclogon",
+          "display_name": "Secondary Logon",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2376,
+          "binary_path": "%windir%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SecurityHealthService",
+          "display_name": "Windows Security Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 3944,
+          "binary_path": "%SystemRoot%\\system32\\SecurityHealthService.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SEMgrSvc",
+          "display_name": "Payments and NFC/SE Manager",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "SENS",
+          "display_name": "System Event Notification Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2624,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcsRedirectionGuard -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SensorDataService",
+          "display_name": "Sensor Data Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\SensorDataService.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "SensorService",
+          "display_name": "Sensor Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "SensrSvc",
+          "display_name": "Sensor Monitoring Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceAndNoImpersonation -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "SessionEnv",
+          "display_name": "Remote Desktop Configuration",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "SharedAccess",
+          "display_name": "Internet Connection Sharing (ICS)",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "ShellHWDetection",
+          "display_name": "Shell Hardware Detection",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "shpamsvc",
+          "display_name": "Shared PC Account Manager",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcsRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "smphost",
+          "display_name": "Microsoft Storage Spaces SMP",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k smphost",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "SmsRouter",
+          "display_name": "Microsoft Windows SMS Router Service.",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT Authority\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "SNMPTrap",
+          "display_name": "SNMP Trap",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\System32\\snmptrap.exe",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "Spooler",
+          "display_name": "Print Spooler",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3536,
+          "binary_path": "%SystemRoot%\\System32\\spoolsv.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "sppsvc",
+          "display_name": "Software Protection",
+          "status": "Stopped",
+          "start_type": "Auto (Delayed)",
+          "binary_path": "%SystemRoot%\\system32\\sppsvc.exe",
+          "account": "NT AUTHORITY\\NetworkService"
+        },
+        {
+          "name": "SSDPSRV",
+          "display_name": "SSDP Discovery",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 6124,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceAndNoImpersonationRedirectionGuard -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "ssh-agent",
+          "display_name": "OpenSSH Authentication Agent",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\System32\\OpenSSH\\ssh-agent.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "SstpSvc",
+          "display_name": "Secure Socket Tunneling Protocol Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 2016,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "StateRepository",
+          "display_name": "State Repository Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3284,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k appmodel -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Steam Client Service",
+          "display_name": "Steam Client Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"C:\\Program Files (x86)\\Common Files\\Steam\\steamservice.exe\" /RunAsService",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "StiSvc",
+          "display_name": "Windows Image Acquisition (WIA)",
+          "status": "Stopped",
+          "start_type": "Auto",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k imgsvc",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "StorSvc",
+          "display_name": "Storage Service",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 8312,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "svsvc",
+          "display_name": "Spot Verifier",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "swprv",
+          "display_name": "Microsoft Software Shadow Copy Provider",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k swprv",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SysMain",
+          "display_name": "SysMain",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 1904,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "SystemEventsBroker",
+          "display_name": "System Events Broker",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1612,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k DcomLaunch -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "TapiSrv",
+          "display_name": "Telephony",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "TermService",
+          "display_name": "Remote Desktop Services",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService",
+          "account": "NT Authority\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "TextInputManagementService",
+          "display_name": "Text Input Management Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Themes",
+          "display_name": "Themes",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "TieringEngineService",
+          "display_name": "Storage Tiers Management",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\TieringEngineService.exe",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "TimeBrokerSvc",
+          "display_name": "Time Broker",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 940,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "TokenBroker",
+          "display_name": "Web Account Manager",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 3720,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "TrkWks",
+          "display_name": "Distributed Link Tracking Client",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "TroubleshootingSvc",
+          "display_name": "Recommended Troubleshooting Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "TrustedInstaller",
+          "display_name": "Windows Modules Installer",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\servicing\\TrustedInstaller.exe",
+          "account": "localSystem"
+        },
+        {
+          "name": "tzautoupdate",
+          "display_name": "Auto Time Zone Updater",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "UmRdpService",
+          "display_name": "Remote Desktop Services UserMode Port Redirector",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "upnphost",
+          "display_name": "UPnP Device Host",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceAndNoImpersonationRedirectionGuard -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "UserManager",
+          "display_name": "User Manager",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "UsoSvc",
+          "display_name": "Update Orchestrator Service",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 2376,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "VaultSvc",
+          "display_name": "Credential Manager",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1480,
+          "binary_path": "%SystemRoot%\\system32\\lsass.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "vds",
+          "display_name": "Virtual Disk",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\vds.exe",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmcompute",
+          "display_name": "Hyper-V Host Compute Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 7508,
+          "binary_path": "%systemroot%\\system32\\vmcompute.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "vmicguestinterface",
+          "display_name": "Hyper-V Guest Service Interface",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestrictedRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmicheartbeat",
+          "display_name": "Hyper-V Heartbeat Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k ICService -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmickvpexchange",
+          "display_name": "Hyper-V Data Exchange Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestrictedRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmicrdv",
+          "display_name": "Hyper-V Remote Desktop Virtualization Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k ICService -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmicshutdown",
+          "display_name": "Hyper-V Guest Shutdown Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestrictedRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmictimesync",
+          "display_name": "Hyper-V Time Synchronization Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmicvmsession",
+          "display_name": "Hyper-V PowerShell Direct Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestrictedRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "vmicvss",
+          "display_name": "Hyper-V Volume Shadow Copy Requestor",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k LocalSystemNetworkRestrictedRedirectionGuard -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "VSS",
+          "display_name": "Volume Shadow Copy",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\vssvc.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "W32Time",
+          "display_name": "Windows Time",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WaaSMedicSvc",
+          "display_name": "WaaSMedicSvc",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k wusvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WalletService",
+          "display_name": "WalletService",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k appmodel -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WarpJITSvc",
+          "display_name": "Warp JIT Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted",
+          "account": "NT Authority\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "wbengine",
+          "display_name": "Block Level Backup Engine Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"%systemroot%\\system32\\wbengine.exe\"",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WbioSrvc",
+          "display_name": "Windows Biometric Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k WbioSvcGroup",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "Wcmsvc",
+          "display_name": "Windows Connection Manager",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3232,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p -s Wcmsvc",
+          "account": "NT Authority\\LocalService"
+        },
+        {
+          "name": "wcncsvc",
+          "display_name": "Windows Connect Now - Config Registrar",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceAndNoImpersonation -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WdiServiceHost",
+          "display_name": "Diagnostic Service Host",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WdiSystemHost",
+          "display_name": "Diagnostic System Host",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 1904,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WdNisSvc",
+          "display_name": "Microsoft Defender Antivirus Network Inspection Service",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "\"%ProgramData%\\Microsoft\\Windows Defender\\Platform\\4.18.24080.9-0\\NisSrv.exe\"",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WebClient",
+          "display_name": "WebClient",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "webthreatdefsvc",
+          "display_name": "Web Threat Defense Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 25900,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k WebThreatDefense -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "Wecsvc",
+          "display_name": "Windows Event Collector",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WEPHOSTSVC",
+          "display_name": "Windows Encryption Provider Host Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k WepHostSvcGroup",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "wercplsupport",
+          "display_name": "Problem Reports Control Panel Support",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k netsvcs -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WerSvc",
+          "display_name": "Windows Error Reporting Service",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k WerSvcGroup",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WFDSConMgrSvc",
+          "display_name": "Wi-Fi Direct Services Connection Manager Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "whesvc",
+          "display_name": "Windows Health and Optimized Experiences",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 1436,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k whesvc -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WiaRpc",
+          "display_name": "Still Image Acquisition Events",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WinDefend",
+          "display_name": "Microsoft Defender Antivirus Service",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "\"C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.18.24080.9-0\\MsMpEng.exe\"",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WinHttpAutoProxySvc",
+          "display_name": "WinHTTP Web Proxy Auto-Discovery Service",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 3116,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceHttp -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "Winmgmt",
+          "display_name": "Windows Management Instrumentation",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "localSystem"
+        },
+        {
+          "name": "WinRM",
+          "display_name": "Windows Remote Management (WS-Management)",
+          "status": "Stopped",
+          "start_type": "Disabled",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k NetworkService -p",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "wisvc",
+          "display_name": "Windows Insider Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WlanSvc",
+          "display_name": "WLAN AutoConfig",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3468,
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "wlidsvc",
+          "display_name": "Microsoft Account Sign-in Assistant",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "wlpasvc",
+          "display_name": "Local Profile Assistant Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT Authority\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WManSvc",
+          "display_name": "Windows Management Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "wmiApSrv",
+          "display_name": "WMI Performance Adapter",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\wbem\\WmiApSrv.exe",
+          "account": "localSystem"
+        },
+        {
+          "name": "WMIRegistrationService",
+          "display_name": "Intel(R) Management Engine WMI Provider Registration",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4056,
+          "binary_path": "%SystemRoot%\\System32\\DriverStore\\FileRepository\\mewmiprov.inf_amd64_d51901c26227fb29\\WMIRegistrationService.exe",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WMPNetworkSvc",
+          "display_name": "Windows Media Player Network Sharing Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "\"%PROGRAMFILES%\\Windows Media Player\\wmpnetwk.exe\"",
+          "account": "NT AUTHORITY\\NetworkService",
+          "exit_code": 1077
+        },
+        {
+          "name": "workfolderssvc",
+          "display_name": "Work Folders",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalService -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WpcMonSvc",
+          "display_name": "Parental Controls",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalService",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "WPDBusEnum",
+          "display_name": "Portable Device Enumerator Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestricted",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WpnService",
+          "display_name": "Windows Push Notifications System Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 2376,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WSAIFabricSvc",
+          "display_name": "Windows AI Components Host",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 7424,
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k WSAIFabricSvcGroup -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "wscsvc",
+          "display_name": "Security Center",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 1384,
+          "binary_path": "%SystemRoot%\\System32\\svchost.exe -k LocalServiceNetworkRestricted -p",
+          "account": "NT AUTHORITY\\LocalService"
+        },
+        {
+          "name": "WSearch",
+          "display_name": "Windows Search",
+          "status": "Running",
+          "start_type": "Auto (Delayed)",
+          "pid": 2992,
+          "binary_path": "%systemroot%\\system32\\SearchIndexer.exe /Embedding",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "WSLService",
+          "display_name": "WSL Service",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4000,
+          "binary_path": "\"C:\\Program Files\\WSL\\wslservice.exe\"",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "wuauserv",
+          "display_name": "Windows Update",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%systemroot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "wuqisvc",
+          "display_name": "Microsoft Usage and Quality Insights",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k WuqiSvcGroup -p",
+          "account": "NT AUTHORITY\\LocalService",
+          "exit_code": 1077
+        },
+        {
+          "name": "WwanSvc",
+          "display_name": "WWAN AutoConfig",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k LocalSystemNetworkRestrictedRedirectionGuard -p",
+          "account": "localSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "XblAuthManager",
+          "display_name": "Xbox Live Auth Manager",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcsRedirectionGuard -p",
+          "account": "LocalSystem"
+        },
+        {
+          "name": "XblGameSave",
+          "display_name": "Xbox Live Game Save",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "XboxGipSvc",
+          "display_name": "Xbox Accessory Management Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "XboxNetApiSvc",
+          "display_name": "Xbox Live Networking Service",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "%SystemRoot%\\system32\\svchost.exe -k netsvcs -p",
+          "account": "LocalSystem",
+          "exit_code": 1077
+        },
+        {
+          "name": "AarSvc_3e8192",
+          "display_name": "Agent Activation Runtime_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k AarSvcGroup -p",
+          "exit_code": 1077
+        },
+        {
+          "name": "BcastDVRUserService_3e8192",
+          "display_name": "GameDVR and Broadcast User Service_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k BcastDVRUserService",
+          "exit_code": 1077
+        },
+        {
+          "name": "BluetoothUserService_3e8192",
+          "display_name": "Bluetooth User Support Service_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k BthAppGroup -p"
+        },
+        {
+          "name": "CaptureService_3e8192",
+          "display_name": "CaptureService_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k LocalService -p",
+          "exit_code": 1077
+        },
+        {
+          "name": "cbdhsvc_3e8192",
+          "display_name": "Clipboard User Service_3e8192",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 9416,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k ClipboardSvcGroup -p"
+        },
+        {
+          "name": "CDPUserSvc_3e8192",
+          "display_name": "Connected Devices Platform User Service_3e8192",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4472,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup"
+        },
+        {
+          "name": "CloudBackupRestoreSvc_3e8192",
+          "display_name": "Cloud Backup and Restore Service_3e8192",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 4472,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup"
+        },
+        {
+          "name": "ConsentUxUserSvc_3e8192",
+          "display_name": "ConsentUX User Service_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k DevicesFlow",
+          "exit_code": 1077
+        },
+        {
+          "name": "CredentialEnrollmentManagerUserSvc_3e8192",
+          "display_name": "CredentialEnrollmentManagerUserSvc_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\CredentialEnrollmentManager.exe",
+          "exit_code": 1077
+        },
+        {
+          "name": "DeviceAssociationBrokerSvc_3e8192",
+          "display_name": "DeviceAssociationBroker_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k DevicesFlow -p",
+          "exit_code": 1077
+        },
+        {
+          "name": "DevicePickerUserSvc_3e8192",
+          "display_name": "DevicePicker_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k DevicesFlow",
+          "exit_code": 1077
+        },
+        {
+          "name": "DevicesFlowUserSvc_3e8192",
+          "display_name": "DevicesFlow_3e8192",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 27592,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k DevicesFlow"
+        },
+        {
+          "name": "MessagingService_3e8192",
+          "display_name": "MessagingService_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup",
+          "exit_code": 1077
+        },
+        {
+          "name": "NPSMSvc_3e8192",
+          "display_name": "Now Playing Session Manager Service_3e8192",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 17820,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k LocalService -p"
+        },
+        {
+          "name": "OneSyncSvc_3e8192",
+          "display_name": "Sync Host_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup",
+          "exit_code": 1077
+        },
+        {
+          "name": "P9RdrService_3e8192",
+          "display_name": "P9RdrService_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k P9RdrService -p",
+          "exit_code": 1077
+        },
+        {
+          "name": "PenService_3e8192",
+          "display_name": "PenService_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k PenService",
+          "exit_code": 1077
+        },
+        {
+          "name": "PimIndexMaintenanceSvc_3e8192",
+          "display_name": "Contact Data_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup",
+          "exit_code": 1077
+        },
+        {
+          "name": "PrintWorkflowUserSvc_3e8192",
+          "display_name": "PrintWorkflow_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k PrintWorkflow",
+          "exit_code": 1077
+        },
+        {
+          "name": "UdkUserSvc_3e8192",
+          "display_name": "Udk User Service_3e8192",
+          "status": "Running",
+          "start_type": "Manual",
+          "pid": 9708,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UdkSvcGroup"
+        },
+        {
+          "name": "UnistoreSvc_3e8192",
+          "display_name": "User Data Storage_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\System32\\svchost.exe -k UnistackSvcGroup",
+          "exit_code": 1077
+        },
+        {
+          "name": "UserDataSvc_3e8192",
+          "display_name": "User Data Access_3e8192",
+          "status": "Stopped",
+          "start_type": "Manual",
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup",
+          "exit_code": 1077
+        },
+        {
+          "name": "webthreatdefusersvc_3e8192",
+          "display_name": "Web Threat Defense User Service_3e8192",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 3084,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p"
+        },
+        {
+          "name": "WpnUserService_3e8192",
+          "display_name": "Windows Push Notifications User Service_3e8192",
+          "status": "Running",
+          "start_type": "Auto",
+          "pid": 4472,
+          "binary_path": "C:\\Windows\\system32\\svchost.exe -k UnistackSvcGroup"
+        }
+      ]
+    },
+    "reliability": {
+      "time_window_hours": 24,
+      "total_errors_logged": 23,
+      "app_crashes": [],
+      "system_errors": [
+        {
+          "timestamp": "2026-09-17T09:50:37.4800307Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}; param5={15C20B67-12E7-4BB6-92BB-7AFF07997402}; param6=WORKSTATION-01; param7=[USER_REDACTED]; param8=S-1-5-21-1000000000-2000000000-3000000000-1001; param9=LocalHost (Using LRPC); param10=OpenAI.Codex_26.911.7940.0_x64__2p2nqsd0c76g0; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T09:50:04.2328932Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}; param5={15C20B67-12E7-4BB6-92BB-7AFF07997402}; param6=WORKSTATION-01; param7=[USER_REDACTED]; param8=S-1-5-21-1000000000-2000000000-3000000000-1001; param9=LocalHost (Using LRPC); param10=SpotifyAB.SpotifyMusic_1.300.277.0_x64__zpdnekdrzrea0; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T09:49:36.687468Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}; param5={15C20B67-12E7-4BB6-92BB-7AFF07997402}; param6=WORKSTATION-01; param7=[USER_REDACTED]; param8=S-1-5-21-1000000000-2000000000-3000000000-1001; param9=LocalHost (Using LRPC); param10=Unavailable; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T09:49:21.0306204Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}; param5={15C20B67-12E7-4BB6-92BB-7AFF07997402}; param6=WORKSTATION-01; param7=[USER_REDACTED]; param8=S-1-5-21-1000000000-2000000000-3000000000-1001; param9=LocalHost (Using LRPC); param10=Unavailable; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T09:48:57.8343405Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={6B3B8D23-FA8D-40B9-8DBD-B950333E2C52}; param5={4839DDB7-58C2-48F5-8283-E1D1807D0D7D}; param6=NT AUTHORITY; param7=LOCAL SERVICE; param8=S-1-5-19; param9=LocalHost (Using LRPC); param10=Unavailable; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T09:48:57.8343405Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={6B3B8D23-FA8D-40B9-8DBD-B950333E2C52}; param5={4839DDB7-58C2-48F5-8283-E1D1807D0D7D}; param6=NT AUTHORITY; param7=LOCAL SERVICE; param8=S-1-5-19; param9=LocalHost (Using LRPC); param10=Unavailable; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T09:48:57.6192028Z",
+          "provider": "Microsoft-Windows-Winlogon",
+          "event_id": 7001,
+          "level": "Info",
+          "channel": "System",
+          "message": "TSId=1; UserSid=S-1-5-21-1000000000-2000000000-3000000000-1001"
+        },
+        {
+          "timestamp": "2026-09-17T05:02:25.1614232Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={9EA82395-E31B-41CA-8DF7-EC1CEE7194DF}; param5={2ED83BAA-B2FD-43B1-99BF-E6149C622692}; param6=NT AUTHORITY; param7=NETWORK SERVICE; param8=S-1-5-20; param9=LocalHost (Using LRPC); param10=Unavailable; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T05:00:25.0743845Z",
+          "provider": "Microsoft-Windows-DNS-Client",
+          "event_id": 1012,
+          "level": "Error",
+          "channel": "System",
+          "message": "ErrorCode=3221225485; Location=0; Context=0"
+        },
+        {
+          "timestamp": "2026-09-17T05:00:18.4976169Z",
+          "provider": "Microsoft-Windows-DNS-Client",
+          "event_id": 1012,
+          "level": "Error",
+          "channel": "System",
+          "message": "ErrorCode=3221225485; Location=0; Context=0"
+        },
+        {
+          "timestamp": "2026-09-17T05:00:12.1429709Z",
+          "provider": "Microsoft-Windows-Hyper-V-Hypervisor",
+          "event_id": 167,
+          "level": "Warning",
+          "channel": "System",
+          "message": "Event 167 from Microsoft-Windows-Hyper-V-Hypervisor"
+        },
+        {
+          "timestamp": "2026-09-17T04:59:56.9620959Z",
+          "provider": "Microsoft-Windows-DNS-Client",
+          "event_id": 1012,
+          "level": "Error",
+          "channel": "System",
+          "message": "ErrorCode=3221225485; Location=0; Context=0"
+        },
+        {
+          "timestamp": "2026-09-17T04:59:45.4868681Z",
+          "provider": "Microsoft-Windows-DNS-Client",
+          "event_id": 1012,
+          "level": "Error",
+          "channel": "System",
+          "message": "ErrorCode=3221225485; Location=0; Context=0"
+        },
+        {
+          "timestamp": "2026-09-17T04:59:36.156566Z",
+          "provider": "Microsoft-Windows-Hyper-V-Hypervisor",
+          "event_id": 167,
+          "level": "Warning",
+          "channel": "System",
+          "message": "Event 167 from Microsoft-Windows-Hyper-V-Hypervisor"
+        },
+        {
+          "timestamp": "2026-09-17T04:59:11.1851813Z",
+          "provider": "winsrvext",
+          "event_id": 100,
+          "level": "Warning",
+          "channel": "System",
+          "message": "ProcessImageFileNameWin32=C:\\Windows\\explorer.exe; ShutdownDuration=3109"
+        },
+        {
+          "timestamp": "2026-09-17T02:45:08.7477222Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}; param5={15C20B67-12E7-4BB6-92BB-7AFF07997402}; param6=WORKSTATION-01; param7=[USER_REDACTED]; param8=S-1-5-21-1000000000-2000000000-3000000000-1001; param9=LocalHost (Using LRPC); param10=OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-17T02:26:02.8874588Z",
+          "provider": "Tcpip",
+          "event_id": 4266,
+          "level": "Warning",
+          "channel": "System",
+          "message": "Event 4266 from Tcpip"
+        },
+        {
+          "timestamp": "2026-09-17T01:45:27.3691058Z",
+          "provider": "Microsoft-Windows-DistributedCOM",
+          "event_id": 10016,
+          "level": "Warning",
+          "channel": "System",
+          "message": "param1=application-specific; param2=Local; param3=Activation; param4={2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}; param5={15C20B67-12E7-4BB6-92BB-7AFF07997402}; param6=WORKSTATION-01; param7=[USER_REDACTED]; param8=S-1-5-21-1000000000-2000000000-3000000000-1001; param9=LocalHost (Using LRPC); param10=SpotifyAB.SpotifyMusic_1.299.317.0_x64__zpdnekdrzrea0; param11=Unavailable"
+        },
+        {
+          "timestamp": "2026-09-16T23:56:19.5614117Z",
+          "provider": "Microsoft-Windows-WindowsUpdateClient",
+          "event_id": 20,
+          "level": "Error",
+          "channel": "System",
+          "message": "errorCode=0x80073d02; updateTitle=9NCBCSZSJRSB-SpotifyAB.SpotifyMusic; updateGuid={9b35c37d-e26a-4f85-a118-7c87c6b9a718}; updateRevisionNumber=1; serviceGuid={855e8a7c-ecb4-4ca3-b045-1dfa50104289}"
+        },
+        {
+          "timestamp": "2026-09-17T10:55:12.8182685Z",
+          "provider": ".NET Runtime",
+          "event_id": 1022,
+          "level": "Error",
+          "channel": "Application",
+          "message": ".NET Runtime version 4.0.30319.0 - There was a failure initializing profiling API attach infrastructure.  This process will not allow a profiler to attach.  HRESULT: 0x80004005.  Process ID (decimal): 4340.  Message ID: [0x2509]."
+        },
+        {
+          "timestamp": "2026-09-17T03:03:12.7366501Z",
+          "provider": ".NET Runtime",
+          "event_id": 1022,
+          "level": "Error",
+          "channel": "Application",
+          "message": ".NET Runtime version 4.0.30319.0 - There was a failure initializing profiling API attach infrastructure.  This process will not allow a profiler to attach.  HRESULT: 0x80004005.  Process ID (decimal): 31908.  Message ID: [0x2509]."
+        },
+        {
+          "timestamp": "2026-09-17T02:53:09.8153662Z",
+          "provider": ".NET Runtime",
+          "event_id": 1022,
+          "level": "Error",
+          "channel": "Application",
+          "message": ".NET Runtime version 4.0.30319.0 - There was a failure initializing profiling API attach infrastructure.  This process will not allow a profiler to attach.  HRESULT: 0x80004005.  Process ID (decimal): 30324.  Message ID: [0x2509]."
+        },
+        {
+          "timestamp": "2026-09-17T02:52:42.790299Z",
+          "provider": ".NET Runtime",
+          "event_id": 1022,
+          "level": "Error",
+          "channel": "Application",
+          "message": ".NET Runtime version 4.0.30319.0 - There was a failure initializing profiling API attach infrastructure.  This process will not allow a profiler to attach.  HRESULT: 0x80004005.  Process ID (decimal): 32592.  Message ID: [0x2509]."
+        }
+      ],
+      "kernel_power_events": [],
+      "bugchecks": []
+    },
+    "software": {
+      "total_installed_apps": 73,
+      "applications": [
+        {
+          "name": "Cockatrice",
+          "version": "2.10.3",
+          "publisher": "Cockatrice team",
+          "scope": "System"
+        },
+        {
+          "name": "CPUID CPU-Z MSI 2.09",
+          "version": "2.09",
+          "publisher": "CPUID, Inc.",
+          "install_date": "20241008",
+          "scope": "System"
+        },
+        {
+          "name": "Git",
+          "version": "2.55.0.5",
+          "publisher": "The Git Development Community",
+          "install_date": "20260905",
+          "scope": "System"
+        },
+        {
+          "name": "Mozilla Firefox (x64 en-US)",
+          "version": "152.0.1",
+          "publisher": "Mozilla",
+          "scope": "System"
+        },
+        {
+          "name": "Mozilla Maintenance Service",
+          "version": "134.0",
+          "publisher": "Mozilla",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft 365 - en-us",
+          "version": "16.0.20326.20144",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft OneNote - en-us",
+          "version": "16.0.20326.20144",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "PyCharm 2026.1.4",
+          "version": "261.26222.68",
+          "publisher": "JetBrains s.r.o.",
+          "scope": "System"
+        },
+        {
+          "name": "Razer Axon",
+          "version": "2.10.1.0",
+          "publisher": "Razer Inc.",
+          "install_date": "20260907",
+          "scope": "System"
+        },
+        {
+          "name": "Razer Cortex",
+          "version": "11.11.0.17",
+          "publisher": "Razer Inc.",
+          "install_date": "20260907",
+          "scope": "System"
+        },
+        {
+          "name": "REAPER (x64)",
+          "version": "7.79",
+          "publisher": "Cockos Incorporated",
+          "scope": "System"
+        },
+        {
+          "name": "Baldur's Gate 3",
+          "publisher": "Larian Studios",
+          "scope": "System"
+        },
+        {
+          "name": "Detroit: Become Human",
+          "publisher": "Quantic Dream",
+          "scope": "System"
+        },
+        {
+          "name": "Magic: The Gathering Arena",
+          "publisher": "Wizards of the Coast LLC",
+          "scope": "System"
+        },
+        {
+          "name": "No Man's Sky",
+          "publisher": "Hello Games",
+          "scope": "System"
+        },
+        {
+          "name": "Marvel Rivals",
+          "publisher": "NetEase Games",
+          "scope": "System"
+        },
+        {
+          "name": "TCG Card Shop Simulator",
+          "publisher": "OPNeon Games",
+          "scope": "System"
+        },
+        {
+          "name": "Portal",
+          "publisher": "Valve",
+          "scope": "System"
+        },
+        {
+          "name": "MECCHA CHAMELEON",
+          "publisher": "lemorion_1224",
+          "scope": "System"
+        },
+        {
+          "name": "Portal 2",
+          "publisher": "Valve",
+          "scope": "System"
+        },
+        {
+          "name": "Phasmophobia",
+          "publisher": "Kinetic Games",
+          "scope": "System"
+        },
+        {
+          "name": "Valheim",
+          "publisher": "Iron Gate AB",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft GameInput",
+          "version": "3.3.221.0",
+          "publisher": "Microsoft Corporation",
+          "install_date": "20260521",
+          "scope": "System"
+        },
+        {
+          "name": "Intel(R) Management Engine Components",
+          "version": "2230.3.19.0",
+          "publisher": "Intel Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Visual C++ 2010  x64 Redistributable - 10.0.40219",
+          "version": "10.0.40219",
+          "publisher": "Microsoft Corporation",
+          "install_date": "20260723",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Windows Application Compatibility Fix Database",
+          "scope": "System"
+        },
+        {
+          "name": "Logitech G HUB",
+          "version": "2026.5.939708",
+          "publisher": "Logitech",
+          "scope": "System"
+        },
+        {
+          "name": "Epic Games Launcher",
+          "version": "1.3.193.0",
+          "publisher": "Epic Games, Inc.",
+          "install_date": "20260829",
+          "scope": "System"
+        },
+        {
+          "name": "Intel(R) Serial IO",
+          "version": "30.100.2221.20",
+          "publisher": "Intel Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "NVIDIA Graphics Driver 591.86",
+          "version": "591.86",
+          "publisher": "NVIDIA Corporation",
+          "install_date": "20260330",
+          "scope": "System"
+        },
+        {
+          "name": "NVIDIA App 11.0.5.245",
+          "version": "11.0.5.245",
+          "publisher": "NVIDIA Corporation",
+          "install_date": "20250919",
+          "scope": "System"
+        },
+        {
+          "name": "NVIDIA PhysX System Software 9.23.1019",
+          "version": "9.23.1019",
+          "publisher": "NVIDIA Corporation",
+          "install_date": "20241028",
+          "scope": "System"
+        },
+        {
+          "name": "NVIDIA FrameView SDK 1.5.11504.36206172",
+          "version": "1.5.11504.36206172",
+          "publisher": "NVIDIA Corporation",
+          "install_date": "20250919",
+          "scope": "System"
+        },
+        {
+          "name": "Battle.net",
+          "publisher": "Blizzard Entertainment",
+          "scope": "System"
+        },
+        {
+          "name": "Escape from Tarkov",
+          "version": "0.16.0.2.34510",
+          "publisher": "Battlestate Games",
+          "scope": "System"
+        },
+        {
+          "name": "Escape from Tarkov: Arena",
+          "version": "0.2.1.5.32803",
+          "publisher": "Battlestate Games",
+          "scope": "System"
+        },
+        {
+          "name": "Exact Audio Copy 1.8",
+          "version": "1.8",
+          "publisher": "Andre Wiethoff",
+          "scope": "System"
+        },
+        {
+          "name": "Google Chrome",
+          "version": "153.0.8010.47",
+          "publisher": "Google LLC",
+          "install_date": "20260915",
+          "scope": "System"
+        },
+        {
+          "name": "Realtek PCI-E Wireless LAN WiFi 6 Driver",
+          "version": "Drv_3.00.0045",
+          "publisher": "REALTEK Semiconductor Corp.",
+          "install_date": "20241008",
+          "scope": "System"
+        },
+        {
+          "name": "Jagex Launcher",
+          "version": "1.2.0.0",
+          "publisher": "Jagex Ltd",
+          "scope": "System"
+        },
+        {
+          "name": "Copilot",
+          "version": "153.0.4234.42",
+          "publisher": "Microsoft Corporation",
+          "install_date": "20260915",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Edge",
+          "version": "153.0.4234.32",
+          "publisher": "Microsoft Corporation",
+          "install_date": "20260912",
+          "scope": "System"
+        },
+        {
+          "name": "Npcap",
+          "version": "1.88",
+          "publisher": "Nmap Project",
+          "scope": "System"
+        },
+        {
+          "name": "OBS Studio",
+          "version": "30.2.3",
+          "publisher": "OBS Project",
+          "scope": "System"
+        },
+        {
+          "name": "Razer Chroma",
+          "version": "4.0.821",
+          "publisher": "Razer Inc.",
+          "scope": "System"
+        },
+        {
+          "name": "Razer Synapse",
+          "version": "4.0.821",
+          "publisher": "Razer Inc.",
+          "scope": "System"
+        },
+        {
+          "name": "Steam",
+          "version": "2.10.91.91",
+          "publisher": "Valve Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Wireshark 4.6.8 x64",
+          "version": "4.6.8",
+          "publisher": "The Wireshark developer community, https://www.wireshark.org",
+          "scope": "System"
+        },
+        {
+          "name": "World of Warcraft",
+          "publisher": "Blizzard Entertainment",
+          "scope": "System"
+        },
+        {
+          "name": "Intel(R) Wireless Bluetooth(R)",
+          "version": "23.40.0.2",
+          "publisher": "Intel Corporation",
+          "install_date": "20240827",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Visual C++ 2013 Redistributable (x64) - 12.0.30501",
+          "version": "12.0.30501.0",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Visual C++ v14 Redistributable (x64) - 14.51.36247",
+          "version": "14.51.36247.0",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "MSI Center SDK",
+          "version": "3.2024.0919.01",
+          "publisher": "MSI",
+          "install_date": "20241008",
+          "scope": "System"
+        },
+        {
+          "name": "Realtek Ethernet Controller Driver",
+          "version": "10.72.522.2024",
+          "publisher": "Realtek",
+          "install_date": "20240827",
+          "scope": "System"
+        },
+        {
+          "name": "Epic Online Services",
+          "version": "5.6.0",
+          "publisher": "Epic Games, Inc.",
+          "install_date": "20260829",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Visual C++ v14 Redistributable (x86) - 14.51.36247",
+          "version": "14.51.36247.0",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Battlestate Games Launcher 14.3.3.2773",
+          "version": "14.3.3.2773",
+          "publisher": "Battlestate Games",
+          "install_date": "20241218",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Windows Desktop Runtime - 6.0.11 (x64)",
+          "version": "6.0.11.31823",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Dropbox Redeem Launcher",
+          "version": "1.0.0.04",
+          "publisher": "MSI",
+          "install_date": "20241008",
+          "scope": "System"
+        },
+        {
+          "name": "Python Launcher",
+          "version": "3.9.7217.0",
+          "publisher": "Python Software Foundation",
+          "install_date": "20241112",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Visual C++ 2010  x86 Redistributable - 10.0.40219",
+          "version": "10.0.40219",
+          "publisher": "Microsoft Corporation",
+          "install_date": "20260723",
+          "scope": "System"
+        },
+        {
+          "name": "Intel(R) Chipset Device Software",
+          "version": "10.1.19627.8423",
+          "publisher": "Intel(R) Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Microsoft Visual C++ 2013 Redistributable (x86) - 12.0.30501",
+          "version": "12.0.30501.0",
+          "publisher": "Microsoft Corporation",
+          "scope": "System"
+        },
+        {
+          "name": "Magic The Gathering Online ",
+          "version": "3.4.148.4541",
+          "publisher": "Daybreak Game Company LLC",
+          "scope": "User"
+        },
+        {
+          "name": "CurseForge 1.320.0-39172",
+          "version": "1.320.0-39172",
+          "publisher": "Overwolf",
+          "scope": "User"
+        },
+        {
+          "name": "DBeaver 26.2.0 (current user)",
+          "version": "26.2.0",
+          "publisher": "DBeaver Corp",
+          "scope": "User"
+        },
+        {
+          "name": "Discord",
+          "version": "1.0.9258",
+          "publisher": "Discord Inc.",
+          "install_date": "20243108",
+          "scope": "User"
+        },
+        {
+          "name": "Docker Desktop",
+          "version": "4.89.0",
+          "publisher": "Docker Inc.",
+          "scope": "User"
+        },
+        {
+          "name": "Microsoft OneDrive",
+          "version": "26.158.0816.0003",
+          "publisher": "Microsoft Corporation",
+          "scope": "User"
+        },
+        {
+          "name": "RuneLite",
+          "version": "2.7.2",
+          "publisher": "RuneLite",
+          "install_date": "20241022",
+          "scope": "User"
+        },
+        {
+          "name": "Microsoft Visual Studio Code (User)",
+          "version": "1.135.0",
+          "publisher": "Microsoft Corporation",
+          "install_date": "20260905",
+          "scope": "User"
+        },
+        {
+          "name": "Python 3.9.0 (64-bit)",
+          "version": "3.9.150.0",
+          "publisher": "Python Software Foundation",
+          "scope": "User"
+        },
+        {
+          "name": "Stremio version 5.0.22",
+          "version": "5.0.22",
+          "publisher": "Smart Code OOD",
+          "install_date": "20260611",
+          "scope": "User"
+        }
+      ],
+      "runtimes": [
+        {
+          "name": ".NET Framework",
+          "version": "4.8.09221"
+        },
+        {
+          "name": ".NET Core / .NET Runtime",
+          "version": "6.0.11",
+          "path": "C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App"
+        }
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "FINDING-SVC-001",
+      "category": "services",
+      "severity": "INFO",
+      "title": "5 automatic-start service(s) currently stopped",
+      "observation": "Found 5 service(s) configured for automatic startup in Stopped state (0 with non-zero exit code).",
+      "evidence": {
+        "non_zero_exit_count": 0,
+        "services": [
+          {
+            "display_name": "Group Policy Client",
+            "exit_code": 0,
+            "name": "gpsvc",
+            "start_type": "Auto",
+            "status": "Stopped"
+          },
+          {
+            "display_name": "Intel(R) Platform License Manager Service",
+            "exit_code": 0,
+            "name": "Intel(R) Platform License Manager Service",
+            "start_type": "Auto",
+            "status": "Stopped"
+          },
+          {
+            "display_name": "Downloaded Maps Manager",
+            "exit_code": 0,
+            "name": "MapsBroker",
+            "start_type": "Auto (Delayed)",
+            "status": "Stopped"
+          },
+          {
+            "display_name": "Software Protection",
+            "exit_code": 0,
+            "name": "sppsvc",
+            "start_type": "Auto (Delayed)",
+            "status": "Stopped"
+          },
+          {
+            "display_name": "Windows Image Acquisition (WIA)",
+            "exit_code": 0,
+            "name": "StiSvc",
+            "start_type": "Auto",
+            "status": "Stopped"
+          }
+        ],
+        "stopped_auto_count": 5
+      },
+      "interpretation": "Services configured with Automatic or Automatic (Delayed) startup type were not running at the time of collection.",
+      "potential_impact": "Background features or management capabilities provided by these services may be unavailable unless started on demand.",
+      "recommendation": "Inspect Service Control Manager logs (System Event Log IDs 7000/7001/7023) or verify whether these services use trigger-start configurations.",
+      "confidence": "HIGH"
+    }
+  ],
+  "limitations": []
+}

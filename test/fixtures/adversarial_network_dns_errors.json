@@ -1,0 +1,52 @@
+{
+  "$schema": "https://systemdiag.io/schema/v1.json",
+  "schema_version": "1.0.0",
+  "metadata": {
+    "tool_version": "1.0.0",
+    "scan_timestamp": "2026-09-16T01:00:00Z",
+    "scan_duration_ms": 250,
+    "profile": "quick",
+    "hostname": "ADV-NET-HOST",
+    "os": "windows",
+    "os_version": "Windows 10 Pro",
+    "architecture": "amd64",
+    "privilege_level": "User",
+    "is_elevated": false,
+    "execution_path": "C:\\sysdiag\\sysdiag.exe",
+    "output_directory": "C:\\sysdiag"
+  },
+  "collection_status": {
+    "total_probes": 9,
+    "successful": 9,
+    "partial": 0,
+    "requires_admin": 0,
+    "unsupported": 0,
+    "failed": 0,
+    "timeout": 0
+  },
+  "data": {
+    "network": {
+      "adapters": [
+        {
+          "id": "eth0",
+          "name": "Ethernet Adapter",
+          "description": "Intel Ethernet Controller",
+          "mac_address": "00:11:22:33:44:55",
+          "status": "Up",
+          "speed_mbps": null,
+          "ipv4_addresses": ["192.168.1.50/24"],
+          "in_errors": 18,
+          "out_errors": 0
+        }
+      ],
+      "dns_test": {
+        "query_target": "ADV-NET-HOST",
+        "success": true,
+        "duration_ms": 11.5,
+        "resolved_ips": ["192.168.1.50"]
+      }
+    }
+  },
+  "findings": [],
+  "limitations": []
+}

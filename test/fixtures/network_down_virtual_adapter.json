@@ -1,0 +1,140 @@
+{
+  "$schema": "https://systemdiag.io/schema/v1.json",
+  "schema_version": "1.0.0",
+  "metadata": {
+    "tool_version": "1.0.0",
+    "scan_timestamp": "2026-09-16T05:00:00Z",
+    "scan_duration_ms": 320,
+    "profile": "quick",
+    "hostname": "FIXTURE-HOST",
+    "os": "windows",
+    "os_version": "Microsoft Windows 11 Enterprise",
+    "architecture": "amd64",
+    "privilege_level": "User",
+    "is_elevated": false,
+    "execution_path": "C:\\sysdiag.exe",
+    "output_directory": "C:\\sysdiag_output"
+  },
+  "collection_status": {
+    "total_probes": 6,
+    "successful": 6,
+    "partial": 0,
+    "requires_admin": 0,
+    "unsupported": 0,
+    "failed": 0,
+    "timeout": 0
+  },
+  "data": {
+    "system": {
+      "hostname": "FIXTURE-HOST",
+      "os_name": "Microsoft Windows 11 Enterprise",
+      "os_version": "23H2",
+      "os_build": "22631.3880",
+      "architecture": "amd64",
+      "uptime_seconds": 86400,
+      "virtualization": {
+        "is_virtual": false
+      }
+    },
+    "cpu": {
+      "model": "13th Gen Intel(R) Core(TM) i7-13700K",
+      "physical_cores": 16,
+      "logical_cores": 24,
+      "utilization_percent": 12.5,
+      "user_percent": 8.0,
+      "kernel_percent": 4.5
+    },
+    "memory": {
+      "total_bytes": 34246979584,
+      "available_bytes": 22147483648,
+      "used_bytes": 12099495936,
+      "used_percent": 35.3,
+      "commit_limit_bytes": 39613669376,
+      "commit_total_bytes": 14124560384,
+      "commit_percent": 35.6
+    },
+    "storage": {
+      "volumes": [
+        {
+          "mount_point": "C:\\",
+          "volume_name": "System",
+          "filesystem": "NTFS",
+          "drive_type": "Fixed",
+          "total_bytes": 1024000000000,
+          "free_bytes": 614400000000,
+          "used_bytes": 409600000000,
+          "used_percent": 40.0
+        }
+      ]
+    },
+    "network": {
+      "adapters": [
+        {
+          "id": "{9B575971-5582-4467-8BD7-975DE1F00101}",
+          "name": "Ethernet",
+          "description": "Intel(R) Ethernet Controller I225-V",
+          "mac_address": "00:1A:2B:3C:4D:5E",
+          "status": "Up",
+          "if_type": "Ethernet",
+          "speed_mbps": 1000,
+          "ipv4_addresses": [
+            "192.168.1.150"
+          ],
+          "gateways": [
+            "192.168.1.1"
+          ],
+          "dns_servers": [
+            "192.168.1.1"
+          ],
+          "dhcp_enabled": true,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{9B575971-5582-4467-8BD7-975DE1F00102}",
+          "name": "Ethernet 2",
+          "description": "Realtek PCIe 2.5GbE Family Controller",
+          "mac_address": "00:1A:2B:3C:4D:5F",
+          "status": "Down",
+          "if_type": "Ethernet",
+          "speed_mbps": null,
+          "ipv4_addresses": [],
+          "dhcp_enabled": true,
+          "in_errors": 0,
+          "out_errors": 0
+        },
+        {
+          "id": "{9B575971-5582-4467-8BD7-975DE1F00103}",
+          "name": "vEthernet (WSL)",
+          "description": "Hyper-V Virtual Ethernet Adapter",
+          "mac_address": "00:15:5D:89:12:34",
+          "status": "Up",
+          "if_type": "Ethernet",
+          "speed_mbps": null,
+          "ipv4_addresses": [
+            "172.28.0.1"
+          ],
+          "dhcp_enabled": false,
+          "in_errors": 0,
+          "out_errors": 0
+        }
+      ],
+      "dns_test": {
+        "query_target": "localhost",
+        "duration_ms": 1.5,
+        "success": true,
+        "resolved_ips": [
+          "127.0.0.1"
+        ]
+      }
+    },
+    "processes": {
+      "total_processes": 180,
+      "total_threads": 1600,
+      "top_cpu": [],
+      "top_memory": []
+    }
+  },
+  "findings": [],
+  "limitations": []
+}

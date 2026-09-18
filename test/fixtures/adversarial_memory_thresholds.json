@@ -1,0 +1,40 @@
+{
+  "$schema": "https://systemdiag.io/schema/v1.json",
+  "schema_version": "1.0.0",
+  "metadata": {
+    "tool_version": "1.0.0",
+    "scan_timestamp": "2026-09-16T01:00:00Z",
+    "scan_duration_ms": 250,
+    "profile": "quick",
+    "hostname": "ADV-MEM-HOST",
+    "os": "windows",
+    "os_version": "Windows 10 Pro",
+    "architecture": "amd64",
+    "privilege_level": "User",
+    "is_elevated": false,
+    "execution_path": "C:\\sysdiag\\sysdiag.exe",
+    "output_directory": "C:\\sysdiag"
+  },
+  "collection_status": {
+    "total_probes": 9,
+    "successful": 9,
+    "partial": 0,
+    "requires_admin": 0,
+    "unsupported": 0,
+    "failed": 0,
+    "timeout": 0
+  },
+  "data": {
+    "memory": {
+      "total_bytes": 17179869184,
+      "available_bytes": 2147483648,
+      "used_bytes": 15032385536,
+      "used_percent": 87.5,
+      "commit_limit_bytes": 17179869184,
+      "commit_total_bytes": 16303695855,
+      "commit_percent": 94.9
+    }
+  },
+  "findings": [],
+  "limitations": []
+}

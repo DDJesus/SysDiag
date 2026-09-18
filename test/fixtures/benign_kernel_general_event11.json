@@ -1,0 +1,64 @@
+{
+  "$schema": "https://systemdiag.io/schema/v1.json",
+  "schema_version": "1.0.0",
+  "metadata": {
+    "tool_version": "1.0.0",
+    "scan_timestamp": "2026-09-16T00:03:12.3659831Z",
+    "scan_duration_ms": 310,
+    "profile": "quick",
+    "hostname": "TEST-HOST-01",
+    "os": "windows",
+    "os_version": "Windows 10 Pro",
+    "architecture": "amd64",
+    "privilege_level": "User",
+    "is_elevated": false,
+    "execution_path": "C:\\sysdiag\\sysdiag.exe",
+    "output_directory": "C:\\sysdiag"
+  },
+  "collection_status": {
+    "total_probes": 9,
+    "successful": 9,
+    "partial": 0,
+    "requires_admin": 0,
+    "unsupported": 0,
+    "failed": 0,
+    "timeout": 0
+  },
+  "data": {
+    "reliability": {
+      "time_window_hours": 24,
+      "total_errors_logged": 6,
+      "system_errors": [
+        {
+          "timestamp": "2026-09-16T00:03:12.3659831Z",
+          "provider": "Microsoft-Windows-Kernel-General",
+          "event_id": 11,
+          "level": "Info",
+          "channel": "System",
+          "message": "ExtraStringLength=81; ExtraString=\\??\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy11\\WINDOWS\\System32\\config\\SOFTWARE; TmId={4f7d39d8-aefd-11f1-a991-580205925851}; RmId={4f7d39d7-aefd-11f1-a991-580205925851}; Status=0xc00000a2; InternalCode=7"
+        },
+        {
+          "timestamp": "2026-09-16T00:03:09.9828895Z",
+          "provider": "Microsoft-Windows-Kernel-General",
+          "event_id": 11,
+          "level": "Info",
+          "channel": "System",
+          "message": "ExtraStringLength=80; ExtraString=\\??\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy11\\WINDOWS\\System32\\config\\DRIVERS; TmId={4f7d39d5-aefd-11f1-a991-580205925851}; RmId={4f7d39d4-aefd-11f1-a991-580205925851}; Status=0xc00000a2; InternalCode=7"
+        },
+        {
+          "timestamp": "2026-09-16T00:03:09.8306235Z",
+          "provider": "Microsoft-Windows-Kernel-General",
+          "event_id": 11,
+          "level": "Info",
+          "channel": "System",
+          "message": "ExtraStringLength=79; ExtraString=\\??\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy11\\WINDOWS\\System32\\config\\SYSTEM; TmId={4f7d39d2-aefd-11f1-a991-580205925851}; RmId={4f7d39d1-aefd-11f1-a991-580205925851}; Status=0xc00000a2; InternalCode=7"
+        }
+      ],
+      "app_crashes": [],
+      "kernel_power_events": [],
+      "bugchecks": []
+    }
+  },
+  "findings": [],
+  "limitations": []
+}

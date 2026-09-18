@@ -1,0 +1,69 @@
+{
+  "$schema": "https://systemdiag.io/schema/v1.json",
+  "schema_version": "1.0.0",
+  "metadata": {
+    "tool_version": "1.0.0",
+    "scan_timestamp": "2026-09-16T18:02:13.6076173Z",
+    "scan_duration_ms": 7,
+    "profile": "quick",
+    "hostname": "DESKTOP-01",
+    "os": "windows",
+    "os_version": "windows",
+    "architecture": "amd64",
+    "privilege_level": "User",
+    "is_elevated": false,
+    "execution_path": "C:\\sysdiag\\sysdiag.exe",
+    "output_directory": "C:\\sysdiag"
+  },
+  "collection_status": {
+    "total_probes": 2,
+    "successful": 2,
+    "partial": 0,
+    "requires_admin": 0,
+    "unsupported": 0,
+    "failed": 0,
+    "timeout": 0,
+    "probes": [
+      {
+        "probe_id": "probe_storage",
+        "category": "storage",
+        "name": "Storage & Disk Metrics Probe",
+        "status": "Success",
+        "duration_ms": 7
+      },
+      {
+        "probe_id": "probe_network",
+        "category": "network",
+        "name": "Network Adapters & Connectivity Probe",
+        "status": "Success",
+        "duration_ms": 12
+      }
+    ]
+  },
+  "data": {
+    "storage": {
+      "volumes": [
+        {
+          "mount_point": "C:\\",
+          "filesystem": "NTFS",
+          "drive_type": "Fixed",
+          "total_bytes": 999212183552,
+          "free_bytes": 742176825344,
+          "used_bytes": 257035358208,
+          "used_percent": 25.7
+        }
+      ],
+      "physical_disks": [
+        {
+          "device_id": "\\\\.\\PhysicalDrive0",
+          "model": "TOPGIANT TG550 1T",
+          "media_type": "Fixed Disk",
+          "bus_type": "SATA",
+          "serial_number": "DISK_SERIAL_001"
+        }
+      ]
+    }
+  },
+  "findings": [],
+  "limitations": []
+}
