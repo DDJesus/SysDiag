@@ -34,6 +34,21 @@ type failingWriter struct{}
 
 func (failingWriter) Write([]byte) (int, error) { return 0, errors.New("writer failed") }
 
+type memoryWriteCloser struct{ bytes.Buffer }
+
+func (*memoryWriteCloser) Close() error { return nil }
+
+type closeFailWriteCloser struct{ bytes.Buffer }
+
+func (*closeFailWriteCloser) Close() error { return errors.New("close failed") }
+
+type failingReporter struct{ err error }
+
+func (f failingReporter) Name() string { return "failing" }
+func (f failingReporter) Generate(*models.DiagnosticReport, io.Writer) error {
+	return f.err
+}
+
 func testDependencies() dependencies {
 	deps := defaultDependencies()
 	deps.isElevated = func() (bool, error) { return false, nil }
@@ -111,6 +126,57 @@ func TestRun_ReportsOutputAndReporterDependencyErrors(t *testing.T) {
 		if !strings.Contains(stderr.String(), want) {
 			t.Errorf("stderr %q does not contain %q", stderr.String(), want)
 		}
+	}
+}
+
+func TestRun_HTMLCreationFailureDoesNotAdvertisePath(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	deps := testDependencies()
+	deps.createFile = func(path string) (io.WriteCloser, error) {
+		if strings.HasSuffix(path, ".html") {
+			return nil, errors.New("disk full")
+		}
+		return &memoryWriteCloser{}, nil
+	}
+
+	code := run(context.Background(), commandOptions{profile: "quick"}, strings.NewReader(""), &stdout, &stderr, deps)
+	if code != 0 {
+		t.Errorf("HTML creation failure changed exit code to %d, want 0", code)
+	}
+	if strings.Contains(stdout.String(), "WHAT TO SEND") || strings.Contains(stdout.String(), ".html") {
+		t.Errorf("handoff advertised an HTML report after creation failure: %q", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "failed to save HTML report: disk full") {
+		t.Errorf("expected HTML creation warning, got %q", stderr.String())
+	}
+}
+
+func TestRun_HTMLGenerationFailureDoesNotAdvertisePath(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	deps := testDependencies()
+	deps.createFile = func(string) (io.WriteCloser, error) { return &memoryWriteCloser{}, nil }
+	deps.newHTMLReporter = func() (reporter.Reporter, error) {
+		return failingReporter{err: errors.New("template write failed")}, nil
+	}
+
+	code := run(context.Background(), commandOptions{profile: "quick"}, strings.NewReader(""), &stdout, &stderr, deps)
+	if code != 0 {
+		t.Errorf("HTML generation failure changed exit code to %d, want 0", code)
+	}
+	if strings.Contains(stdout.String(), "WHAT TO SEND") || strings.Contains(stdout.String(), ".html") {
+		t.Errorf("handoff advertised an HTML report after generation failure: %q", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "failed to write HTML report: template write failed") {
+		t.Errorf("expected HTML generation warning, got %q", stderr.String())
+	}
+}
+
+func TestWriteReportFile_CloseFailureReturnsError(t *testing.T) {
+	err := writeReportFile("report.html", "HTML", failingReporter{}, models.NewDiagnosticReport(), func(string) (io.WriteCloser, error) {
+		return &closeFailWriteCloser{}, nil
+	})
+	if err == nil || !strings.Contains(err.Error(), "failed to close HTML report: close failed") {
+		t.Errorf("writeReportFile error = %v, want a close failure", err)
 	}
 }
 

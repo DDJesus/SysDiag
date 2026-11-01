@@ -221,7 +221,9 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 	timestamp := scanStartTime.Format("20060102_150405")
 	cleanHost := strings.ReplaceAll(report.Metadata.Hostname, " ", "_")
 	jsonFilename := filepath.Join(resolvedOutDir, fmt.Sprintf("sysdiag_report_%s_%s.json", cleanHost, timestamp))
-	writeReportFile(jsonFilename, "JSON", deps.jsonReporter, report, deps.createFile, stderr)
+	if err := writeReportFile(jsonFilename, "JSON", deps.jsonReporter, report, deps.createFile); err != nil {
+		fmt.Fprintf(stderr, "Warning: %v\n", err)
+	}
 
 	var htmlFilename string
 	if !opts.noHTML {
@@ -231,7 +233,10 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 			fmt.Fprintf(stderr, "Warning: failed to initialize HTML reporter: %v\n", err)
 			htmlFilename = ""
 		} else {
-			writeReportFile(htmlFilename, "HTML", htmlRep, report, deps.createFile, stderr)
+			if err := writeReportFile(htmlFilename, "HTML", htmlRep, report, deps.createFile); err != nil {
+				fmt.Fprintf(stderr, "Warning: %v\n", err)
+				htmlFilename = ""
+			}
 		}
 	}
 
@@ -286,16 +291,18 @@ func selectProbes(registry *collector.Registry, profile string, opts commandOpti
 	return registry.ForProfile(profile)
 }
 
-func writeReportFile(path, format string, rep reporter.Reporter, report *models.DiagnosticReport, createFile func(string) (io.WriteCloser, error), stderr io.Writer) {
+func writeReportFile(path, format string, rep reporter.Reporter, report *models.DiagnosticReport, createFile func(string) (io.WriteCloser, error)) error {
 	f, err := createFile(path)
 	if err != nil {
-		fmt.Fprintf(stderr, "Warning: failed to save %s report: %v\n", format, err)
-		return
+		return fmt.Errorf("failed to save %s report: %w", format, err)
 	}
-	if err := rep.Generate(report, f); err != nil {
-		fmt.Fprintf(stderr, "Warning: failed to write %s report: %v\n", format, err)
+	generateErr := rep.Generate(report, f)
+	closeErr := f.Close()
+	if generateErr != nil {
+		generateErr = fmt.Errorf("failed to write %s report: %w", format, generateErr)
 	}
-	if err := f.Close(); err != nil {
-		fmt.Fprintf(stderr, "Warning: failed to close %s report: %v\n", format, err)
+	if closeErr != nil {
+		closeErr = fmt.Errorf("failed to close %s report: %w", format, closeErr)
 	}
+	return errors.Join(generateErr, closeErr)
 }
