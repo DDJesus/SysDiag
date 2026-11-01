@@ -61,13 +61,18 @@ export class SchemaValidator {
                     errors.push(`"collection_status.${field}" must be a numeric integer.`);
                 }
             }
+            for (const field of ['canceled', 'skipped']) {
+                if (status[field] !== undefined && typeof status[field] !== 'number') {
+                    errors.push(`"collection_status.${field}" must be a numeric integer when provided.`);
+                }
+            }
 
             // Validate explicit per-probe collection records if present
             if (status.probes !== undefined) {
                 if (!Array.isArray(status.probes)) {
                     errors.push('"collection_status.probes" must be an array when provided.');
                 } else {
-                    const validStatuses = ['Success', 'Partial', 'Requires Administrator', 'Unsupported', 'Failed', 'Timeout'];
+                    const validStatuses = ['Success', 'Partial', 'Requires Administrator', 'Unsupported', 'Failed', 'Timeout', 'Canceled', 'Skipped'];
                     status.probes.forEach((p, idx) => {
                         if (!p.probe_id && !p.category) {
                             errors.push(`Probe record at index ${idx} missing "probe_id" or "category".`);

@@ -79,6 +79,8 @@ func (r *Reporter) Generate(report *models.DiagnosticReport, w io.Writer) error 
 	data.DegradedProbesCount = report.CollectionStatus.RequiresAdmin +
 		report.CollectionStatus.Failed +
 		report.CollectionStatus.Timeout +
+		report.CollectionStatus.Canceled +
+		report.CollectionStatus.Skipped +
 		report.CollectionStatus.Unsupported +
 		report.CollectionStatus.Partial
 
@@ -319,6 +321,8 @@ const reportTemplate = `<!DOCTYPE html>
                 {{if gt .Report.CollectionStatus.RequiresAdmin 0}}* {{.Report.CollectionStatus.RequiresAdmin}} probe(s) required elevated Administrator privileges to query full telemetry. {{end}}
                 {{if gt .Report.CollectionStatus.Partial 0}}* {{.Report.CollectionStatus.Partial}} probe(s) returned partial results. {{end}}
                 {{if gt .Report.CollectionStatus.Timeout 0}}* {{.Report.CollectionStatus.Timeout}} probe(s) timed out. {{end}}
+                {{if gt .Report.CollectionStatus.Canceled 0}}* {{.Report.CollectionStatus.Canceled}} probe(s) canceled during collection. {{end}}
+                {{if gt .Report.CollectionStatus.Skipped 0}}* {{.Report.CollectionStatus.Skipped}} probe(s) were not started after cancellation. {{end}}
                 {{if gt .Report.CollectionStatus.Failed 0}}* {{.Report.CollectionStatus.Failed}} probe(s) encountered execution errors. {{end}}
             </p>
         </div>

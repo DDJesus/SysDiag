@@ -2,6 +2,7 @@ package collector
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -62,16 +63,39 @@ func (e *Engine) Execute(ctx context.Context, probes []Probe, sampleDuration tim
 		wg.Add(1)
 		go func(idx int, target Probe) {
 			defer wg.Done()
-			sem <- struct{}{}
-			defer func() { <-sem }()
-
-			start := time.Now()
 			res := ProbeResult{
 				ProbeID:           target.ID(),
 				Name:              target.Name(),
 				Category:          target.Category(),
 				RequiredPrivilege: target.RequiredPrivilege(),
 			}
+			if ctx.Err() != nil {
+				res.Status = StatusSkipped
+				res.Err = context.Canceled
+				results[idx] = res
+				return
+			}
+
+			select {
+			case sem <- struct{}{}:
+			case <-ctx.Done():
+				res.Status = StatusSkipped
+				res.Err = context.Canceled
+				results[idx] = res
+				return
+			}
+			defer func() { <-sem }()
+
+			// The semaphore and cancellation cases may become ready together.
+			// Recheck before starting so cancellation never starts another probe.
+			if ctx.Err() != nil {
+				res.Status = StatusSkipped
+				res.Err = context.Canceled
+				results[idx] = res
+				return
+			}
+
+			start := time.Now()
 
 			probeCtx, cancel := context.WithTimeout(ctx, e.probeTimeout)
 			defer cancel()
@@ -86,11 +110,17 @@ func (e *Engine) Execute(ctx context.Context, probes []Probe, sampleDuration tim
 			}()
 
 			data, status, err := target.Run(probeCtx, sampleDuration)
-			res.Duration = time.Since(start)
+			finished := time.Now()
+			res.Duration = finished.Sub(start)
 
-			if probeCtx.Err() == context.DeadlineExceeded {
+			deadline, hasDeadline := probeCtx.Deadline()
+			if probeCtx.Err() == context.DeadlineExceeded && hasDeadline && !finished.Before(deadline) {
 				res.Status = StatusTimeout
 				res.Err = fmt.Errorf("probe timed out after %v", e.probeTimeout)
+			} else if status == StatusCanceled || errors.Is(err, context.Canceled) {
+				res.Status = StatusCanceled
+				res.Data = data
+				res.Err = context.Canceled
 			} else {
 				res.Status = status
 				res.Data = data
@@ -183,6 +213,27 @@ func (e *Engine) Normalize(results []ProbeResult, report *models.DiagnosticRepor
 				ProbeID:  res.ProbeID,
 				Category: string(res.Category),
 				Reason:   limitationReason,
+			})
+		case StatusCanceled:
+			report.CollectionStatus.Canceled++
+			limitationReason := "Probe canceled by scan cancellation"
+			if res.Err != nil {
+				limitationReason = fmt.Sprintf("Probe canceled by scan cancellation: %v", res.Err)
+			}
+			if rec.Reason == "" {
+				rec.Reason = limitationReason
+			}
+			report.Limitations = append(report.Limitations, models.CollectionLimitation{
+				ProbeID: res.ProbeID, Category: string(res.Category), Reason: limitationReason,
+			})
+		case StatusSkipped:
+			report.CollectionStatus.Skipped++
+			limitationReason := "Probe not started because scan was canceled"
+			if rec.Reason == "" {
+				rec.Reason = limitationReason
+			}
+			report.Limitations = append(report.Limitations, models.CollectionLimitation{
+				ProbeID: res.ProbeID, Category: string(res.Category), Reason: limitationReason,
 			})
 		case StatusFailed:
 			fallthrough

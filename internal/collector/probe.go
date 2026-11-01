@@ -23,6 +23,8 @@ const (
 	StatusUnsupported   ProbeStatus = "Unsupported"
 	StatusFailed        ProbeStatus = "Failed"
 	StatusTimeout       ProbeStatus = "Timeout"
+	StatusCanceled      ProbeStatus = "Canceled"
+	StatusSkipped       ProbeStatus = "Skipped"
 )
 
 // ProbeCategory classifies probes by target subsystem.

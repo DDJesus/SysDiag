@@ -76,12 +76,14 @@ func (r *Reporter) Generate(report *models.DiagnosticReport, w io.Writer) error 
 		report.CollectionStatus.Successful, report.CollectionStatus.TotalProbes,
 	)
 
-	if report.CollectionStatus.RequiresAdmin > 0 || report.CollectionStatus.Failed > 0 || report.CollectionStatus.Timeout > 0 {
-		fmt.Fprintf(w, "  %sDegraded Probes:%s Admin Required: %d | Failed: %d | Timed Out: %d\n",
+	if report.CollectionStatus.RequiresAdmin > 0 || report.CollectionStatus.Failed > 0 || report.CollectionStatus.Timeout > 0 || report.CollectionStatus.Canceled > 0 || report.CollectionStatus.Skipped > 0 {
+		fmt.Fprintf(w, "  %sDegraded Probes:%s Admin Required: %d | Failed: %d | Timed Out: %d | Canceled: %d | Not Started: %d\n",
 			colorYellow, colorReset,
 			report.CollectionStatus.RequiresAdmin,
 			report.CollectionStatus.Failed,
 			report.CollectionStatus.Timeout,
+			report.CollectionStatus.Canceled,
+			report.CollectionStatus.Skipped,
 		)
 	}
 

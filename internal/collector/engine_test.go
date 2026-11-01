@@ -3,12 +3,247 @@ package collector_test
 import (
 	"context"
 	"errors"
+	"fmt"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/systemdiag/sysdiag/internal/collector"
 	"github.com/systemdiag/sysdiag/internal/models"
 )
+
+type cancellationProbe struct {
+	id      string
+	started chan<- string
+	calls   *atomic.Int32
+}
+
+type controlledProbe struct {
+	id      string
+	started chan<- string
+	release <-chan struct{}
+	active  *atomic.Int32
+	peak    *atomic.Int32
+}
+
+type completionProbe struct {
+	id       string
+	started  chan<- string
+	release  <-chan struct{}
+	returned chan<- struct{}
+}
+
+func (p *controlledProbe) ID() string                        { return p.id }
+func (p *controlledProbe) Name() string                      { return p.id }
+func (p *controlledProbe) Category() collector.ProbeCategory { return collector.CategorySystem }
+func (p *controlledProbe) RequiredPrivilege() collector.PrivilegeLevel {
+	return collector.PrivilegeUser
+}
+func (p *controlledProbe) SupportedProfiles() []string { return []string{"all"} }
+func (p *controlledProbe) Run(ctx context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
+	active := p.active.Add(1)
+	defer p.active.Add(-1)
+	for previous := p.peak.Load(); active > previous && !p.peak.CompareAndSwap(previous, active); previous = p.peak.Load() {
+	}
+	p.started <- p.id
+	select {
+	case <-p.release:
+		return p.id, collector.StatusSuccess, nil
+	case <-ctx.Done():
+		return nil, collector.StatusFailed, ctx.Err()
+	}
+}
+
+func (p *completionProbe) ID() string                        { return p.id }
+func (p *completionProbe) Name() string                      { return p.id }
+func (p *completionProbe) Category() collector.ProbeCategory { return collector.CategorySystem }
+func (p *completionProbe) RequiredPrivilege() collector.PrivilegeLevel {
+	return collector.PrivilegeUser
+}
+func (p *completionProbe) SupportedProfiles() []string { return []string{"all"} }
+func (p *completionProbe) Run(context.Context, time.Duration) (interface{}, collector.ProbeStatus, error) {
+	p.started <- p.id
+	<-p.release
+	p.returned <- struct{}{}
+	return p.id, collector.StatusSuccess, nil
+}
+
+func (p *cancellationProbe) ID() string                        { return p.id }
+func (p *cancellationProbe) Name() string                      { return p.id }
+func (p *cancellationProbe) Category() collector.ProbeCategory { return collector.CategorySystem }
+func (p *cancellationProbe) RequiredPrivilege() collector.PrivilegeLevel {
+	return collector.PrivilegeUser
+}
+func (p *cancellationProbe) SupportedProfiles() []string { return []string{"all"} }
+func (p *cancellationProbe) Run(ctx context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
+	p.calls.Add(1)
+	p.started <- p.id
+	<-ctx.Done()
+	return nil, collector.StatusFailed, ctx.Err()
+}
+
+func TestEngine_CanceledBeforeExecutionSkipsProbes(t *testing.T) {
+	var calls atomic.Int32
+	started := make(chan string, 2)
+	probes := []collector.Probe{
+		&cancellationProbe{id: "first", started: started, calls: &calls},
+		&cancellationProbe{id: "second", started: started, calls: &calls},
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	results := collector.NewEngine().Execute(ctx, probes, 0)
+	if got := calls.Load(); got != 0 {
+		t.Errorf("canceled execution started %d probes, want 0", got)
+	}
+	if len(results) != len(probes) {
+		t.Fatalf("got %d results, want %d", len(results), len(probes))
+	}
+	for i, wantID := range []string{"first", "second"} {
+		if results[i].ProbeID != wantID {
+			t.Errorf("result %d is for %q, want %q", i, results[i].ProbeID, wantID)
+		}
+		if results[i].Status != collector.StatusSkipped {
+			t.Errorf("result %d status is %q, want Skipped", i, results[i].Status)
+		}
+	}
+}
+
+func TestEngine_CancellationStopsQueuedProbes(t *testing.T) {
+	var calls atomic.Int32
+	started := make(chan string, 3)
+	probes := []collector.Probe{
+		&cancellationProbe{id: "first", started: started, calls: &calls},
+		&cancellationProbe{id: "second", started: started, calls: &calls},
+		&cancellationProbe{id: "third", started: started, calls: &calls},
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	engine := collector.NewEngine(collector.WithMaxConcurrency(1))
+	done := make(chan []collector.ProbeResult, 1)
+	go func() { done <- engine.Execute(ctx, probes, 0) }()
+
+	<-started // One probe is active; the remaining probes are queued behind the sole slot.
+	cancel()
+	results := <-done
+
+	if got := calls.Load(); got != 1 {
+		t.Errorf("cancellation started %d probes, want only the active probe", got)
+	}
+	if len(results) != len(probes) {
+		t.Fatalf("got %d results, want %d", len(results), len(probes))
+	}
+	canceled, skipped := 0, 0
+	for i, wantID := range []string{"first", "second", "third"} {
+		if results[i].ProbeID != wantID {
+			t.Errorf("result %d is for %q, want %q", i, results[i].ProbeID, wantID)
+		}
+		switch results[i].Status {
+		case collector.StatusCanceled:
+			canceled++
+		case collector.StatusSkipped:
+			skipped++
+		default:
+			t.Errorf("result %q has status %q, want Canceled or Skipped", wantID, results[i].Status)
+		}
+	}
+	if canceled != 1 || skipped != 2 {
+		t.Errorf("got %d canceled and %d skipped results, want 1 and 2", canceled, skipped)
+	}
+
+	report := models.NewDiagnosticReport()
+	engine.Normalize(results, report)
+	if report.CollectionStatus.Canceled != 1 || report.CollectionStatus.Skipped != 2 {
+		t.Errorf("normalized cancellation counts are canceled=%d skipped=%d, want 1 and 2", report.CollectionStatus.Canceled, report.CollectionStatus.Skipped)
+	}
+	if report.CollectionStatus.Failed != 0 {
+		t.Errorf("cancellation was counted as %d ordinary failures, want 0", report.CollectionStatus.Failed)
+	}
+}
+
+func TestEngine_CancellationPreservesCompletedProbe(t *testing.T) {
+	started := make(chan string, 2)
+	releaseCompleted := make(chan struct{})
+	returned := make(chan struct{}, 1)
+	var calls atomic.Int32
+	probes := []collector.Probe{
+		&completionProbe{id: "completed", started: started, release: releaseCompleted, returned: returned},
+		&cancellationProbe{id: "active", started: started, calls: &calls},
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	engine := collector.NewEngine(collector.WithMaxConcurrency(2))
+	done := make(chan []collector.ProbeResult, 1)
+	go func() { done <- engine.Execute(ctx, probes, 0) }()
+
+	<-started
+	<-started
+	close(releaseCompleted)
+	<-returned
+	cancel()
+	results := <-done
+	if len(results) != 2 {
+		t.Fatalf("got %d results, want 2", len(results))
+	}
+	if results[0].ProbeID != "completed" || results[0].Status != collector.StatusSuccess {
+		t.Errorf("completed probe result = (%q, %q), want (completed, Success)", results[0].ProbeID, results[0].Status)
+	}
+	if results[1].ProbeID != "active" || results[1].Status != collector.StatusCanceled {
+		t.Errorf("active probe result = (%q, %q), want (active, Canceled)", results[1].ProbeID, results[1].Status)
+	}
+}
+
+func TestEngine_SuccessConcurrencyAndDeterministicResults(t *testing.T) {
+	const concurrency = 2
+	var active, peak atomic.Int32
+	started := make(chan string, 6)
+	release := make(chan struct{})
+	probes := make([]collector.Probe, 6)
+	for i := range probes {
+		id := fmt.Sprintf("probe-%d", i)
+		probes[i] = &controlledProbe{id: id, started: started, release: release, active: &active, peak: &peak}
+	}
+
+	done := make(chan []collector.ProbeResult, 1)
+	engine := collector.NewEngine(collector.WithMaxConcurrency(concurrency))
+	go func() { done <- engine.Execute(context.Background(), probes, 0) }()
+	<-started
+	<-started
+	if got := active.Load(); got != concurrency {
+		t.Fatalf("active probes after two starts = %d, want %d", got, concurrency)
+	}
+	close(release)
+	results := <-done
+
+	if got := peak.Load(); got > concurrency {
+		t.Errorf("peak concurrency = %d, exceeds configured limit %d", got, concurrency)
+	}
+	if len(results) != len(probes) {
+		t.Fatalf("got %d results, want %d", len(results), len(probes))
+	}
+	for i, result := range results {
+		wantID := fmt.Sprintf("probe-%d", i)
+		if result.ProbeID != wantID {
+			t.Errorf("result %d is for %q, want %q", i, result.ProbeID, wantID)
+		}
+		if result.Status != collector.StatusSuccess {
+			t.Errorf("result %q status is %q, want Success", wantID, result.Status)
+		}
+	}
+}
+
+func TestEngine_CooperativeProbeTimeout(t *testing.T) {
+	started := make(chan string, 1)
+	var calls atomic.Int32
+	probe := &cancellationProbe{id: "timeout", started: started, calls: &calls}
+	engine := collector.NewEngine(collector.WithProbeTimeout(20 * time.Millisecond))
+	results := engine.Execute(context.Background(), []collector.Probe{probe}, 0)
+	if calls.Load() != 1 {
+		t.Fatalf("probe called %d times, want 1", calls.Load())
+	}
+	if len(results) != 1 || results[0].Status != collector.StatusTimeout {
+		t.Fatalf("got results %#v, want one Timeout result", results)
+	}
+}
 
 type mockProbe struct {
 	id          string
@@ -23,11 +258,11 @@ type mockProbe struct {
 	shouldPanic bool
 }
 
-func (m *mockProbe) ID() string                              { return m.id }
-func (m *mockProbe) Name() string                            { return m.name }
-func (m *mockProbe) Category() collector.ProbeCategory       { return m.category }
+func (m *mockProbe) ID() string                                  { return m.id }
+func (m *mockProbe) Name() string                                { return m.name }
+func (m *mockProbe) Category() collector.ProbeCategory           { return m.category }
 func (m *mockProbe) RequiredPrivilege() collector.PrivilegeLevel { return m.privilege }
-func (m *mockProbe) SupportedProfiles() []string             { return m.profiles }
+func (m *mockProbe) SupportedProfiles() []string                 { return m.profiles }
 func (m *mockProbe) Run(ctx context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
 	if m.shouldPanic {
 		panic("simulated critical probe panic")

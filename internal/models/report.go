@@ -41,6 +41,8 @@ type CollectionStatus struct {
 	Unsupported   int           `json:"unsupported"`
 	Failed        int           `json:"failed"`
 	Timeout       int           `json:"timeout"`
+	Canceled      int           `json:"canceled"`
+	Skipped       int           `json:"skipped"`
 	Probes        []ProbeRecord `json:"probes,omitempty"`
 }
 

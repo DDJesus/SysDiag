@@ -17,6 +17,7 @@ import (
 	"github.com/systemdiag/sysdiag/internal/collector"
 	"github.com/systemdiag/sysdiag/internal/config"
 	"github.com/systemdiag/sysdiag/internal/models"
+	"github.com/systemdiag/sysdiag/internal/platform"
 	"github.com/systemdiag/sysdiag/internal/probes/cpu"
 	"github.com/systemdiag/sysdiag/internal/probes/memory"
 	"github.com/systemdiag/sysdiag/internal/probes/network"
@@ -26,7 +27,6 @@ import (
 	"github.com/systemdiag/sysdiag/internal/probes/software"
 	"github.com/systemdiag/sysdiag/internal/probes/storage"
 	"github.com/systemdiag/sysdiag/internal/probes/system"
-	"github.com/systemdiag/sysdiag/internal/platform"
 	htmlReporter "github.com/systemdiag/sysdiag/internal/reporter/html"
 	jsonReporter "github.com/systemdiag/sysdiag/internal/reporter/json"
 	termReporter "github.com/systemdiag/sysdiag/internal/reporter/terminal"
@@ -177,6 +177,7 @@ func main() {
 
 	results := engine.Execute(ctx, probesToRun, profCfg.SampleDuration)
 	engine.Normalize(results, report)
+	scanCanceled := report.CollectionStatus.Canceled > 0 || report.CollectionStatus.Skipped > 0
 
 	// Update OS Version metadata from SystemMetrics if populated
 	if report.Data.System != nil {
@@ -199,6 +200,9 @@ func main() {
 		jsonRep := jsonReporter.NewReporter()
 		if err := jsonRep.Generate(report, os.Stdout); err != nil {
 			fmt.Fprintf(os.Stderr, "Error exporting JSON: %v\n", err)
+			os.Exit(1)
+		}
+		if scanCanceled {
 			os.Exit(1)
 		}
 		os.Exit(0)
@@ -237,7 +241,12 @@ func main() {
 	// Handover guidance banner (Mom Test)
 	fmt.Println()
 	fmt.Println("================================================================================")
-	fmt.Printf(" [SUCCESS] Diagnostic collection completed safely in %d ms.\n", report.Metadata.ScanDurationMS)
+	if scanCanceled {
+		fmt.Printf(" [INCOMPLETE] Diagnostic collection canceled after %d ms. Partial results were saved.\n", report.Metadata.ScanDurationMS)
+		fmt.Printf(" Canceled probes: %d; not started: %d.\n", report.CollectionStatus.Canceled, report.CollectionStatus.Skipped)
+	} else {
+		fmt.Printf(" [SUCCESS] Diagnostic collection completed safely in %d ms.\n", report.Metadata.ScanDurationMS)
+	}
 	fmt.Println(" Zero changes, modifications, or optimizations were performed on this machine.")
 	fmt.Println("--------------------------------------------------------------------------------")
 	if htmlFilename != "" {
@@ -254,5 +263,8 @@ func main() {
 	if *pauseFlag || isDoubleClicked {
 		fmt.Println("\nPress Enter to exit...")
 		bufio.NewReader(os.Stdin).ReadString('\n')
+	}
+	if scanCanceled {
+		os.Exit(1)
 	}
 }
