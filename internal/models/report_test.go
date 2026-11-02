@@ -273,6 +273,7 @@ func TestDiagnosticReport_CompleteSubsystemRoundTrip(t *testing.T) {
 		t.Fatalf("Failed to serialize full report: %v", err)
 	}
 
+	assertContract(t, bytes)
 	restored, err := models.FromJSON(bytes)
 	if err != nil {
 		t.Fatalf("Failed to restore full report: %v", err)

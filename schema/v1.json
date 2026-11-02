@@ -1,0 +1,1138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://systemdiag.io/schema/v1.json",
+  "title": "SysDiag canonical report 1.0.0",
+  "$ref": "#/$defs/DiagnosticReport",
+  "$defs": {
+    "Finding": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "INFO",
+            "WARNING",
+            "CRITICAL"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "observation": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "interpretation": {
+          "type": "string"
+        },
+        "potential_impact": {
+          "type": "string"
+        },
+        "recommendation": {
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "severity",
+        "title",
+        "observation",
+        "evidence",
+        "interpretation",
+        "potential_impact",
+        "recommendation",
+        "confidence"
+      ]
+    },
+    "CollectionLimitation": {
+      "type": "object",
+      "properties": {
+        "probe_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "privilege_required": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "probe_id",
+        "category",
+        "reason"
+      ]
+    },
+    "NetworkAdapterMetrics": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "mac_address": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "if_type": {
+          "type": "string"
+        },
+        "speed_mbps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ipv4_addresses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "ipv6_addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gateways": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dns_servers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dhcp_enabled": {
+          "type": "boolean"
+        },
+        "in_octets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "out_octets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "in_errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "out_errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "in_discards": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "out_discards": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status",
+        "speed_mbps",
+        "ipv4_addresses",
+        "dhcp_enabled",
+        "in_errors",
+        "out_errors"
+      ]
+    },
+    "DNSResolutionTest": {
+      "type": "object",
+      "properties": {
+        "query_target": {
+          "type": "string"
+        },
+        "duration_ms": {
+          "type": "number"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "resolved_ips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "query_target",
+        "duration_ms",
+        "success"
+      ]
+    },
+    "NetworkMetrics": {
+      "type": "object",
+      "properties": {
+        "adapters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/NetworkAdapterMetrics"
+          }
+        },
+        "dns_test": {
+          "$ref": "#/$defs/DNSResolutionTest"
+        }
+      },
+      "required": [
+        "adapters"
+      ]
+    },
+    "ProcessSummary": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ppid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string"
+        },
+        "executable_path": {
+          "type": "string"
+        },
+        "thread_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "working_set_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "private_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cpu_time_seconds": {
+          "type": "number"
+        },
+        "cpu_percent": {
+          "type": "number"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "pid",
+        "ppid",
+        "name",
+        "thread_count",
+        "working_set_bytes"
+      ]
+    },
+    "ProcessMetrics": {
+      "type": "object",
+      "properties": {
+        "total_processes": {
+          "type": "integer"
+        },
+        "total_threads": {
+          "type": "integer"
+        },
+        "top_cpu": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ProcessSummary"
+          }
+        },
+        "top_memory": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ProcessSummary"
+          }
+        }
+      },
+      "required": [
+        "total_processes",
+        "total_threads",
+        "top_cpu",
+        "top_memory"
+      ]
+    },
+    "AppCrashEvent": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "application": {
+          "type": "string"
+        },
+        "fault_module": {
+          "type": "string"
+        },
+        "exception_code": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp",
+        "application",
+        "event_id"
+      ]
+    },
+    "SystemErrorEvent": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "integer"
+        },
+        "level": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp",
+        "provider",
+        "event_id",
+        "level",
+        "channel",
+        "message"
+      ]
+    },
+    "KernelPowerEvent": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "event_id": {
+          "type": "integer"
+        },
+        "bugcheck_code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp",
+        "event_id",
+        "message"
+      ]
+    },
+    "BugCheckEvent": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "bugcheck_string": {
+          "type": "string"
+        },
+        "bugcheck_code": {
+          "type": "string"
+        },
+        "dump_file": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp",
+        "message"
+      ]
+    },
+    "ReliabilityMetrics": {
+      "type": "object",
+      "properties": {
+        "time_window_hours": {
+          "type": "integer"
+        },
+        "total_errors_logged": {
+          "type": "integer"
+        },
+        "app_crashes": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/AppCrashEvent"
+          }
+        },
+        "system_errors": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/SystemErrorEvent"
+          }
+        },
+        "kernel_power_events": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/KernelPowerEvent"
+          }
+        },
+        "bugchecks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/BugCheckEvent"
+          }
+        }
+      },
+      "required": [
+        "time_window_hours",
+        "total_errors_logged",
+        "app_crashes",
+        "system_errors",
+        "kernel_power_events",
+        "bugchecks"
+      ]
+    },
+    "ExecutionMetadata": {
+      "type": "object",
+      "properties": {
+        "tool_version": {
+          "type": "string"
+        },
+        "scan_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "scan_duration_ms": {
+          "type": "integer"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "hostname": {
+          "type": "string"
+        },
+        "os": {
+          "type": "string"
+        },
+        "os_version": {
+          "type": "string"
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "privilege_level": {
+          "type": "string"
+        },
+        "is_elevated": {
+          "type": "boolean"
+        },
+        "execution_path": {
+          "type": "string"
+        },
+        "output_directory": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool_version",
+        "scan_timestamp",
+        "scan_duration_ms",
+        "profile",
+        "hostname",
+        "os",
+        "os_version",
+        "architecture",
+        "privilege_level",
+        "is_elevated",
+        "execution_path",
+        "output_directory"
+      ]
+    },
+    "ProbeRecord": {
+      "type": "object",
+      "properties": {
+        "probe_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "duration_ms": {
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "privilege_required": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "probe_id",
+        "category",
+        "status",
+        "duration_ms"
+      ]
+    },
+    "CollectionStatus": {
+      "type": "object",
+      "properties": {
+        "total_probes": {
+          "type": "integer"
+        },
+        "successful": {
+          "type": "integer"
+        },
+        "partial": {
+          "type": "integer"
+        },
+        "requires_admin": {
+          "type": "integer"
+        },
+        "unsupported": {
+          "type": "integer"
+        },
+        "failed": {
+          "type": "integer"
+        },
+        "timeout": {
+          "type": "integer"
+        },
+        "canceled": {
+          "type": "integer"
+        },
+        "skipped": {
+          "type": "integer"
+        },
+        "probes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProbeRecord"
+          }
+        }
+      },
+      "required": [
+        "total_probes",
+        "successful",
+        "partial",
+        "requires_admin",
+        "unsupported",
+        "failed",
+        "timeout",
+        "canceled",
+        "skipped"
+      ]
+    },
+    "DiagnosticReport": {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "const": "https://systemdiag.io/schema/v1.json"
+        },
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "metadata": {
+          "$ref": "#/$defs/ExecutionMetadata"
+        },
+        "collection_status": {
+          "$ref": "#/$defs/CollectionStatus"
+        },
+        "data": {
+          "$ref": "#/$defs/DiagnosticData"
+        },
+        "findings": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/Finding"
+          }
+        },
+        "limitations": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/CollectionLimitation"
+          }
+        }
+      },
+      "required": [
+        "$schema",
+        "schema_version",
+        "metadata",
+        "collection_status",
+        "data",
+        "findings",
+        "limitations"
+      ]
+    },
+    "ServiceInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "start_type": {
+          "type": "string"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "binary_path": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "name",
+        "display_name",
+        "status",
+        "start_type"
+      ]
+    },
+    "ServicesMetrics": {
+      "type": "object",
+      "properties": {
+        "total_count": {
+          "type": "integer"
+        },
+        "running_count": {
+          "type": "integer"
+        },
+        "stopped_count": {
+          "type": "integer"
+        },
+        "failed_auto_start_count": {
+          "type": "integer"
+        },
+        "failed_auto_start": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ServiceInfo"
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ServiceInfo"
+          }
+        }
+      },
+      "required": [
+        "total_count",
+        "running_count",
+        "stopped_count",
+        "failed_auto_start_count",
+        "failed_auto_start"
+      ]
+    },
+    "InstalledApp": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "install_date": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "scope"
+      ]
+    },
+    "HotFixInfo": {
+      "type": "object",
+      "properties": {
+        "hotfix_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "installed_on": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "hotfix_id"
+      ]
+    },
+    "RuntimeInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ]
+    },
+    "SoftwareMetrics": {
+      "type": "object",
+      "properties": {
+        "total_installed_apps": {
+          "type": "integer"
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InstalledApp"
+          }
+        },
+        "hotfixes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HotFixInfo"
+          }
+        },
+        "runtimes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RuntimeInfo"
+          }
+        }
+      },
+      "required": [
+        "total_installed_apps"
+      ]
+    },
+    "VolumeMetrics": {
+      "type": "object",
+      "properties": {
+        "mount_point": {
+          "type": "string"
+        },
+        "volume_name": {
+          "type": "string"
+        },
+        "filesystem": {
+          "type": "string"
+        },
+        "drive_type": {
+          "type": "string"
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "free_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_percent": {
+          "type": "number"
+        },
+        "is_read_only": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "mount_point",
+        "total_bytes",
+        "free_bytes",
+        "used_bytes",
+        "used_percent"
+      ]
+    },
+    "PhysicalDiskMetrics": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "media_type": {
+          "type": "string"
+        },
+        "bus_type": {
+          "type": "string"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serial_number": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "device_id"
+      ]
+    },
+    "StorageIOMetrics": {
+      "type": "object",
+      "properties": {
+        "read_bytes_per_sec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "write_bytes_per_sec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "avg_queue_depth": {
+          "type": "number"
+        },
+        "avg_latency_ms": {
+          "type": "number"
+        }
+      }
+    },
+    "StorageMetrics": {
+      "type": "object",
+      "properties": {
+        "volumes": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/VolumeMetrics"
+          }
+        },
+        "physical_disks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PhysicalDiskMetrics"
+          }
+        },
+        "io_metrics": {
+          "$ref": "#/$defs/StorageIOMetrics"
+        }
+      },
+      "required": [
+        "volumes"
+      ]
+    },
+    "VirtualizationInfo": {
+      "type": "object",
+      "properties": {
+        "is_virtual": {
+          "type": "boolean"
+        },
+        "hypervisor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "is_virtual"
+      ]
+    },
+    "SystemMetrics": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string"
+        },
+        "os_name": {
+          "type": "string"
+        },
+        "os_version": {
+          "type": "string"
+        },
+        "os_build": {
+          "type": "string"
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "uptime_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "boot_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "virtualization": {
+          "$ref": "#/$defs/VirtualizationInfo"
+        }
+      },
+      "required": [
+        "hostname",
+        "os_name",
+        "os_build",
+        "architecture",
+        "uptime_seconds",
+        "boot_time",
+        "virtualization"
+      ]
+    },
+    "CPUMetrics": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "physical_cores": {
+          "type": "integer"
+        },
+        "logical_cores": {
+          "type": "integer"
+        },
+        "utilization_percent": {
+          "type": "number"
+        },
+        "user_percent": {
+          "type": "number"
+        },
+        "kernel_percent": {
+          "type": "number"
+        },
+        "iowait_percent": {
+          "type": "number"
+        },
+        "steal_percent": {
+          "type": "number"
+        },
+        "load_1m": {
+          "type": "number"
+        },
+        "load_5m": {
+          "type": "number"
+        },
+        "load_15m": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "model",
+        "physical_cores",
+        "logical_cores",
+        "utilization_percent",
+        "user_percent",
+        "kernel_percent"
+      ]
+    },
+    "MemoryMetrics": {
+      "type": "object",
+      "properties": {
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "available_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_percent": {
+          "type": "number"
+        },
+        "commit_limit_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "commit_total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "commit_percent": {
+          "type": "number"
+        },
+        "cached_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "buffers_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swap_total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swap_used_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swap_free_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swap_percent": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "total_bytes",
+        "available_bytes",
+        "used_bytes",
+        "used_percent",
+        "commit_limit_bytes",
+        "commit_total_bytes",
+        "commit_percent"
+      ]
+    },
+    "DiagnosticData": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "$ref": "#/$defs/SystemMetrics"
+        },
+        "cpu": {
+          "$ref": "#/$defs/CPUMetrics"
+        },
+        "memory": {
+          "$ref": "#/$defs/MemoryMetrics"
+        },
+        "storage": {
+          "$ref": "#/$defs/StorageMetrics"
+        },
+        "network": {
+          "$ref": "#/$defs/NetworkMetrics"
+        },
+        "processes": {
+          "$ref": "#/$defs/ProcessMetrics"
+        },
+        "services": {
+          "$ref": "#/$defs/ServicesMetrics"
+        },
+        "reliability": {
+          "$ref": "#/$defs/ReliabilityMetrics"
+        },
+        "software": {
+          "$ref": "#/$defs/SoftwareMetrics"
+        }
+      }
+    }
+  }
+}
