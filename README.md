@@ -75,3 +75,38 @@ Official versioned releases require a separate manually approved release process
 A bad release should be marked as superseded or withdrawn and replaced by a new
 version; existing published artifacts should not be overwritten. This CI workflow
 does not publish releases or deploy software.
+
+## Manual versioned releases
+
+The separate `.github/workflows/release.yml` workflow is started manually from
+**Actions > Manual Windows Release > Run workflow**. Enter a semantic version
+without the `v` prefix (for example `1.2.3`) and the full 40-character source
+commit SHA. The workflow requires that commit to be reachable from `main`, runs Go
+tests and race detection, builds `windows/amd64` with CGO disabled, then executes
+`sysdiag.exe --version` and `sysdiag.exe --help` on a Windows runner. It packages
+`sysdiag.exe`, this README and `VERSION.txt`, and verifies the ZIP checksum.
+
+Before enabling or dispatching this workflow, configure the GitHub Actions
+environment named `release` with required reviewer **DDJesus**, self-review
+prevention disabled, administrator bypass disabled, and deployment branches
+restricted to `main`. The final job references this environment and is the only job with
+`contents: write`; earlier jobs have read-only permissions. GitHub plan support
+and the configured reviewer list must be verified in repository settings. The
+workflow file alone cannot guarantee that environment protection is configured,
+so do not dispatch it until the owner confirms the gate.
+
+The workflow validates an explicit SemVer version and source commit and checks
+that no matching tag or release already exists. It never moves an existing tag.
+After all tests and Windows smoke tests pass, and the protected environment
+approval is granted, it creates a version tag and a **draft** GitHub Release with
+`sysdiag-windows-amd64-vVERSION.zip` and its `.sha256` file. `VERSION.txt` records
+the version, full source SHA, Go version, target and workflow run URL. The workflow
+never publishes the draft; the repository owner reviews the source, assets and
+checksum in GitHub, then publishes manually.
+
+If verification fails, no tag or release is created. If draft creation fails
+after tag creation, inspect the tag and draft state before retrying. Never move or
+overwrite a tag: resolve a bad release by deleting it only under repository
+policy or, preferably, mark it superseded and issue a new version. Published
+assets must not be silently replaced. PR artifacts are short-lived test builds;
+versioned draft/published releases are distribution artifacts.
