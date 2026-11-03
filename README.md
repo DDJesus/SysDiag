@@ -57,3 +57,21 @@ Cross-platform builds and race detection are also used in CI where the runner su
 - `internal/sanitizer`: optional identifier redaction
 
 SysDiag is observational and does not remediate, upload, or modify host configuration. See [LICENSE](LICENSE) for license terms.
+
+## Pull request builds
+
+Pull requests run Go tests with the race detector and compile Linux amd64/arm64,
+macOS amd64/arm64, and Windows amd64. After both verification jobs pass, CI
+builds `sysdiag.exe` for Windows amd64, packages it with this README, and uploads
+the ZIP plus a SHA-256 checksum as the `sysdiag-windows-amd64-pr-N` temporary
+artifact. Temporary artifacts expire after seven days and are not official
+releases. Download them from the pull request's **Checks** tab, open the completed
+workflow run, and use its **Artifacts** section. Verify on Linux/macOS with
+`sha256sum -c sysdiag-windows-amd64-pr-N.zip.sha256`, or on PowerShell with
+`Get-FileHash .\sysdiag-windows-amd64-pr-N.zip -Algorithm SHA256` and compare the
+hash with the checksum file.
+
+Official versioned releases require a separate manually approved release process.
+A bad release should be marked as superseded or withdrawn and replaced by a new
+version; existing published artifacts should not be overwritten. This CI workflow
+does not publish releases or deploy software.
