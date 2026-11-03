@@ -2,6 +2,7 @@ package reporter_test
 
 import (
 	"bytes"
+	"io"
 	"strings"
 	"testing"
 	"time"
@@ -10,6 +11,7 @@ import (
 	htmlReporter "github.com/systemdiag/sysdiag/internal/reporter/html"
 	jsonReporter "github.com/systemdiag/sysdiag/internal/reporter/json"
 	termReporter "github.com/systemdiag/sysdiag/internal/reporter/terminal"
+	"github.com/systemdiag/sysdiag/internal/sanitizer"
 )
 
 func createTestReport() *models.DiagnosticReport {
@@ -276,5 +278,63 @@ func TestHTMLReportQualifiesNoFindingsWhenCollectionIsIncomplete(t *testing.T) {
 		if !strings.Contains(output.String(), phrase) {
 			t.Errorf("incomplete HTML report does not explain %q", phrase)
 		}
+	}
+}
+
+func TestSanitizedReportOutputsDoNotExposeSyntheticIdentifiers(t *testing.T) {
+	t.Setenv("USERNAME", "SyntheticReportUser")
+	t.Setenv("USERDOMAIN", "SYNTHETIC-REPORT-DOMAIN")
+	report := models.NewDiagnosticReport()
+	report.Metadata.Hostname = "SYNTH-REPORT-HOST"
+	report.Metadata.OutputDirectory = `C:\Users\SyntheticReportUser\Reports`
+	report.Data.Network = &models.NetworkMetrics{
+		Adapters: []models.NetworkAdapterMetrics{{
+			Name: "SyntheticReportUser Ethernet", Status: "Up", MACAddress: "02:00:5E:10:00:01",
+			IPv4Addresses: []string{"203.0.113.12"}, IPv6Addresses: []string{"2001:db8::12"},
+		}},
+	}
+	report.Findings = []models.Finding{{
+		ID: "FINDING-TEST-PRIVACY", Title: "Issue on SYNTH-REPORT-HOST",
+		Observation: "SyntheticReportUser hit 203.0.113.12 <script>alert(1)</script>", Evidence: map[string]interface{}{
+			"nested": map[string]interface{}{"path": `C:\Users\SyntheticReportUser\service.exe`, "ipv6": "2001:db8::12"},
+		}, Recommendation: "Review account SYNTHETIC-REPORT-DOMAIN\\SyntheticReportUser",
+	}}
+	report.CollectionStatus.Probes = []models.ProbeRecord{{Name: "probe SYNTH-REPORT-HOST", Status: "Failed", Reason: "failure for SyntheticReportUser at 203.0.113.12"}}
+	report.Limitations = []models.CollectionLimitation{{ProbeID: "probe_test", Reason: "failure for SYNTH-REPORT-HOST"}}
+	sanitizer.SanitizeReport(report)
+
+	jsonRep := jsonReporter.NewReporter()
+	htmlRep, err := htmlReporter.NewReporter()
+	if err != nil {
+		t.Fatal(err)
+	}
+	termRep := termReporter.NewReporter()
+	var jsonOut, htmlOut, terminalOut bytes.Buffer
+	for _, tc := range []struct {
+		name string
+		r    interface {
+			Generate(*models.DiagnosticReport, io.Writer) error
+		}
+		out *bytes.Buffer
+	}{{"JSON", jsonRep, &jsonOut}, {"HTML", htmlRep, &htmlOut}, {"terminal", termRep, &terminalOut}} {
+		if err := tc.r.Generate(report, tc.out); err != nil {
+			t.Fatalf("%s render failed: %v", tc.name, err)
+		}
+	}
+	for _, output := range []struct {
+		name string
+		text string
+	}{{"JSON", jsonOut.String()}, {"HTML", htmlOut.String()}, {"terminal", terminalOut.String()}} {
+		for _, secret := range []string{"SYNTH-REPORT-HOST", "SyntheticReportUser", "203.0.113.12", "2001:db8::12", "02:00:5E:10:00:01"} {
+			if strings.Contains(output.text, secret) {
+				t.Errorf("%s output leaked %q", output.name, secret)
+			}
+		}
+	}
+	if !strings.Contains(jsonOut.String(), "FINDING-TEST-PRIVACY") || !strings.Contains(htmlOut.String(), "FINDING-TEST-PRIVACY") {
+		t.Fatal("sanitization removed useful finding identifiers")
+	}
+	if strings.Contains(htmlOut.String(), "<script>alert(1)</script>") || !strings.Contains(htmlOut.String(), "&lt;script&gt;alert(1)&lt;/script&gt;") {
+		t.Fatal("HTML report did not safely escape untrusted finding text")
 	}
 }

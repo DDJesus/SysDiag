@@ -1,6 +1,7 @@
 package sanitizer_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/systemdiag/sysdiag/internal/models"
@@ -41,8 +42,8 @@ func TestSanitizeReport(t *testing.T) {
 	if report.Findings[0].Title == "Error on CONFIDENTIAL-SRV-99 for user JohnDoe" {
 		t.Errorf("Expected finding title to be sanitized, got: %s", report.Findings[0].Title)
 	}
-	if report.Findings[0].Evidence["target_ip"] != "10.x.x.x" {
-		t.Errorf("Expected target IP sanitized to 10.x.x.x, got %v", report.Findings[0].Evidence["target_ip"])
+	if report.Findings[0].Evidence["target_ip"] != "[IP_REDACTED]" {
+		t.Errorf("Expected target IP sanitized to [IP_REDACTED], got %v", report.Findings[0].Evidence["target_ip"])
 	}
 }
 
@@ -140,12 +141,12 @@ func TestSanitizeReport_SubsystemMetrics(t *testing.T) {
 
 	// Verify Network
 	for _, ip := range report.Data.Network.Adapters[0].IPv4Addresses {
-		if ip != "10.x.x.x" {
-			t.Errorf("Expected IPv4 address sanitized to 10.x.x.x, got %s", ip)
+		if ip != "[IP_REDACTED]" {
+			t.Errorf("Expected IPv4 address sanitized to [IP_REDACTED], got %s", ip)
 		}
 	}
-	if report.Data.Network.Adapters[0].Gateways[0] != "10.x.x.x" {
-		t.Errorf("Expected gateway sanitized to 10.x.x.x, got %s", report.Data.Network.Adapters[0].Gateways[0])
+	if report.Data.Network.Adapters[0].Gateways[0] != "[IP_REDACTED]" {
+		t.Errorf("Expected gateway sanitized to [IP_REDACTED], got %s", report.Data.Network.Adapters[0].Gateways[0])
 	}
 	if report.Data.Network.DNSTest.QueryTarget != "REDACTED-HOST" {
 		t.Errorf("Expected DNS query target sanitized, got %s", report.Data.Network.DNSTest.QueryTarget)
@@ -315,4 +316,81 @@ func TestUnsanitizedReport_PreservesHardwareIdentifiers(t *testing.T) {
 func TestSanitizeReport_NilSafety(t *testing.T) {
 	// Should not panic on nil
 	sanitizer.SanitizeReport(nil)
+}
+
+func TestSanitizeReportCoversAllNestedStrings(t *testing.T) {
+	t.Setenv("USERNAME", "SyntheticAlice")
+	t.Setenv("USERDOMAIN", "SYNTHETIC-CORP")
+	const host = "SYNTHETIC-SRV-17"
+	const serial = "SYNTH-DISK-SERIAL-007"
+	const mac = "02:00:5E:10:00:01"
+	const publicIP = "203.0.113.41"
+	const ipv6 = "2001:db8::8"
+	const mappedIPv6 = "::ffff:192.0.2.13"
+	report := models.NewDiagnosticReport()
+	report.Metadata.Hostname = host
+	report.Metadata.ExecutionPath = `C:\Users\SyntheticAlice\tools\sysdiag.exe`
+	report.Metadata.OutputDirectory = `/home/SyntheticAlice/reports/SYNTHETIC-SRV-17`
+	report.Data.System = &models.SystemMetrics{Hostname: host, OSVersion: "Windows 11"}
+	report.Data.CPU = &models.CPUMetrics{Model: "Synthetic Core 8"}
+	report.Data.Storage = &models.StorageMetrics{
+		Volumes:       []models.VolumeMetrics{{MountPoint: `/home/SyntheticAlice/data`, FileSystem: "ext4"}},
+		PhysicalDisks: []models.PhysicalDiskMetrics{{DeviceID: "disk0", SerialNumber: serial}},
+	}
+	report.Data.Network = &models.NetworkMetrics{
+		Adapters: []models.NetworkAdapterMetrics{{
+			ID: "adapter-1", Name: "Ethernet", MACAddress: mac,
+			IPv4Addresses: []string{publicIP}, IPv6Addresses: []string{ipv6},
+		}},
+		DNSTest: &models.DNSResolutionTest{QueryTarget: "example.com", ResolvedIPs: []string{publicIP, ipv6, mappedIPv6}, Error: "lookup failed on " + host},
+	}
+	report.Data.Processes = &models.ProcessMetrics{TopCPU: []models.ProcessSummary{{Name: "alice-agent", ExecutablePath: `C:\Users\SyntheticAlice\bin\agent.exe`}}}
+	report.Data.Services = &models.ServicesMetrics{Services: []models.ServiceInfo{{
+		Name: "svc-SyntheticAlice", DisplayName: "Synthetic service", Account: `SYNTHETIC-CORP\SyntheticAlice`, BinaryPath: `C:\Users\SyntheticAlice\svc.exe`,
+	}}}
+	report.Data.Reliability = &models.ReliabilityMetrics{SystemErrors: []models.SystemErrorEvent{{
+		Provider: "Disk provider", Message: "failure for " + host + " at " + publicIP + " " + ipv6,
+	}}}
+	report.Findings = []models.Finding{{
+		Title: "Alert for " + host, Observation: "serial " + serial + " and address " + publicIP,
+		Interpretation: "MAC " + mac, PotentialImpact: `User path C:\Users\SyntheticAlice\data`,
+		Recommendation: "check service account SYNTHETIC-CORP\\SyntheticAlice",
+		Evidence: map[string]interface{}{
+			"nested": map[string]interface{}{"message": "host " + host, "addresses": []interface{}{publicIP, ipv6}},
+		},
+	}}
+	report.CollectionStatus.Probes = []models.ProbeRecord{{Name: "probe for " + host, Reason: "account SyntheticAlice MAC " + mac}}
+	report.Limitations = []models.CollectionLimitation{{Reason: "error for " + host + " at " + publicIP}}
+
+	sanitizer.SanitizeReport(report)
+	encoded, err := report.ToJSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, sensitive := range []string{host, "SyntheticAlice", "SYNTHETIC-CORP", serial, mac, publicIP, ipv6, mappedIPv6} {
+		if strings.Contains(string(encoded), sensitive) {
+			t.Errorf("sanitized report still contains %q: %s", sensitive, encoded)
+		}
+	}
+	for _, useful := range []string{"Windows 11", "Synthetic Core 8", "ext4", "example.com", "Ethernet"} {
+		if !strings.Contains(string(encoded), useful) {
+			t.Errorf("sanitization removed useful technical value %q", useful)
+		}
+	}
+	if report.Data.Network.DNSTest.Error == "" || report.CollectionStatus.Probes[0].Reason == "" {
+		t.Fatal("sanitization discarded diagnostic error or probe reason")
+	}
+}
+
+func TestSanitizeTextRedactsPathsAndIPsButPreservesTechnicalText(t *testing.T) {
+	t.Setenv("USERNAME", "SyntheticBob")
+	got := sanitizer.SanitizeText(`C:\Users\SyntheticBob\logs, /home/SyntheticBob/logs, 8.8.8.8, 2001:db8::1, ::ffff:192.0.2.13, NODE-SYNTH-2, NTFS`, "NODE-SYNTH-2")
+	for _, sensitive := range []string{"SyntheticBob", "8.8.8.8", "2001:db8::1", "::ffff:192.0.2.13", "NODE-SYNTH-2"} {
+		if strings.Contains(got, sensitive) {
+			t.Errorf("SanitizeText(%q) still contains %q", got, sensitive)
+		}
+	}
+	if !strings.Contains(got, "NTFS") || !strings.Contains(got, "REDACTED-HOST") {
+		t.Errorf("SanitizeText removed useful technical text or failed to mark hostname: %q", got)
+	}
 }
