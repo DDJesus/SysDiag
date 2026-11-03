@@ -86,10 +86,10 @@ tests and race detection, builds `windows/amd64` with CGO disabled, then execute
 `sysdiag.exe --version` and `sysdiag.exe --help` on a Windows runner. It packages
 `sysdiag.exe`, this README and `VERSION.txt`, and verifies the ZIP checksum.
 
-Before enabling or dispatching this workflow, a repository administrator must
-configure the GitHub Actions environment named `release` with required reviewers
-limited to the repository owner (and enable prevention of self-review if
-available). The final job references this environment and is the only job with
+Before enabling or dispatching this workflow, configure the GitHub Actions
+environment named `release` with required reviewer **DDJesus**, self-review
+prevention disabled, administrator bypass disabled, and deployment branches
+restricted to `main`. The final job references this environment and is the only job with
 `contents: write`; earlier jobs have read-only permissions. GitHub plan support
 and the configured reviewer list must be verified in repository settings. The
 workflow file alone cannot guarantee that environment protection is configured,
@@ -110,4 +110,3 @@ overwrite a tag: resolve a bad release by deleting it only under repository
 policy or, preferably, mark it superseded and issue a new version. Published
 assets must not be silently replaced. PR artifacts are short-lived test builds;
 versioned draft/published releases are distribution artifacts.
-
