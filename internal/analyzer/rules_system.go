@@ -95,6 +95,9 @@ func (r *MemoryCommitExhaustionRule) Evaluate(_ context.Context, report *models.
 	}
 
 	mem := report.Data.Memory
+	if mem.TotalBytes == 0 || mem.AvailableBytes > mem.TotalBytes {
+		return nil, nil
+	}
 	var findings []models.Finding
 
 	toGB := func(b uint64) float64 {
