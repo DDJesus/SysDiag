@@ -32,6 +32,9 @@ tokens such as `REDACTED-HOST`, `[USER_REDACTED]`, `[DOMAIN_REDACTED]`,
 system names, filesystems, and ordinary DNS test names remain visible. Sanitized
 report filenames use the `REDACTED-HOST` token; the requested output directory
 is still used, while its displayed and reported path is sanitized.
+Evidence map keys that need redaction receive the same tokens as values. If a
+redacted key conflicts with an existing key, SysDiag preserves every entry and
+adds a deterministic ` [redacted key N]` suffix to the colliding key.
 
 ### Network DNS observation
 

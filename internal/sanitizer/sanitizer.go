@@ -5,6 +5,8 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,7 +18,9 @@ var (
 	posixUserPath   = regexp.MustCompile(`(?i)(/(?:home|users)/)[^/\\\s]+`)
 	rootPath        = regexp.MustCompile(`(?i)(/root)(/|$)`)
 	macAddress      = regexp.MustCompile(`(?i)\b(?:[0-9a-f]{2}[:-]){5}[0-9a-f]{2}\b`)
-	ipCandidate     = regexp.MustCompile(`(?i)(?:[0-9a-f]{0,4}:){2,7}(?:[0-9a-f]{0,4}|(?:[0-9]{1,3}\.){3}[0-9]{1,3})(?:%[a-z0-9_.-]+)?|(?:[0-9]{1,3}\.){3}[0-9]{1,3}`)
+	ipv4Candidate   = `(?:[0-9]{1,3}\.){3}[0-9]{1,3}`
+	ipv6Candidate   = `(?:::ffff:` + ipv4Candidate + `|(?:[0-9a-f]{0,4}:){2,7}(?:[0-9a-f]{0,4}|` + ipv4Candidate + `))`
+	ipCandidate     = regexp.MustCompile(`(?i)(?:\[` + ipv6Candidate + `(?:%[a-z0-9_.-]+)?\]|\[` + ipv4Candidate + `\]|` + ipv6Candidate + `(?:%[a-z0-9_.-]+)?|` + ipv4Candidate + `)`)
 )
 
 type identifier struct {
@@ -176,22 +180,10 @@ func sanitizeString(value string, identifiers []identifier) string {
 			value = item.pattern.ReplaceAllString(value, item.token)
 			continue
 		}
-		// Match identifiers as components so short host or account names do not
-		// damage unrelated technical words.
-		value = item.pattern.ReplaceAllString(value, `${1}`+item.token+`${3}`)
+		value = replaceIdentifier(value, item)
 	}
 	value = macAddress.ReplaceAllString(value, "[MAC_REDACTED]")
-	value = ipCandidate.ReplaceAllStringFunc(value, func(candidate string) string {
-		address := candidate
-		if zone := strings.LastIndexByte(address, '%'); zone >= 0 {
-			address = address[:zone]
-		}
-		if net.ParseIP(address) != nil {
-			return "[IP_REDACTED]"
-		}
-		return candidate
-	})
-	return value
+	return redactIPAddresses(value)
 }
 
 func newIdentifier(value, token string) identifier {
@@ -199,10 +191,105 @@ func newIdentifier(value, token string) identifier {
 	if token == "[SERIAL_REDACTED]" {
 		item.pattern = regexp.MustCompile(`(?i)` + regexp.QuoteMeta(value))
 	} else {
-		componentChars := `A-Za-z0-9_.`
-		item.pattern = regexp.MustCompile(`(?i)(^|[^` + componentChars + `])(` + regexp.QuoteMeta(value) + `)([^` + componentChars + `]|$)`)
+		item.pattern = regexp.MustCompile(`(?i)` + regexp.QuoteMeta(value))
 	}
 	return item
+}
+
+func replaceIdentifier(text string, item identifier) string {
+	matches := item.pattern.FindAllStringIndex(text, -1)
+	if len(matches) == 0 {
+		return text
+	}
+	var out strings.Builder
+	last := 0
+	for _, match := range matches {
+		start, end := match[0], match[1]
+		if !identifierBoundary(text, start-1) || !identifierBoundary(text, end) {
+			continue
+		}
+		out.WriteString(text[last:start])
+		out.WriteString(item.token)
+		last = end
+	}
+	if last == 0 {
+		return text
+	}
+	out.WriteString(text[last:])
+	return out.String()
+}
+
+func identifierBoundary(text string, index int) bool {
+	if index < 0 || index >= len(text) {
+		return true
+	}
+	b := text[index]
+	return !((b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9') || b == '_' || b == '.')
+}
+
+func redactIPAddresses(text string) string {
+	matches := ipCandidate.FindAllStringIndex(text, -1)
+	if len(matches) == 0 {
+		return text
+	}
+	var out strings.Builder
+	last := 0
+	for _, match := range matches {
+		start, end := match[0], match[1]
+		candidate := text[start:end]
+		address := strings.TrimPrefix(strings.TrimSuffix(candidate, "]"), "[")
+		if zone := strings.LastIndexByte(address, '%'); zone >= 0 {
+			address = address[:zone]
+		}
+		if net.ParseIP(address) == nil || !ipBoundary(text, start-1, candidate, true) || !ipBoundary(text, end, candidate, false) {
+			continue
+		}
+		out.WriteString(text[last:start])
+		out.WriteString("[IP_REDACTED]")
+		last = end
+	}
+	if last == 0 {
+		return text
+	}
+	out.WriteString(text[last:])
+	return out.String()
+}
+
+func ipBoundary(text string, index int, candidate string, before bool) bool {
+	if index < 0 || index >= len(text) {
+		return true
+	}
+	b := text[index]
+	if isIPTokenByte(b) {
+		// A colon can separate an address from surrounding diagnostic text. A
+		// colon after IPv4 may also introduce a port; keep the port untouched.
+		if b == ':' {
+			if before {
+				return true
+			}
+			address := strings.Trim(candidate, "[]")
+			if !strings.Contains(address, ":") {
+				return true
+			}
+			for i := index + 1; i < len(text); i++ {
+				c := text[i]
+				if c < '0' || c > '9' {
+					return !isHexByte(c)
+				}
+			}
+			return true
+		}
+		return false
+	}
+	return true
+}
+
+func isIPTokenByte(b byte) bool {
+	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9') || strings.ContainsRune(".:/%[]_-", rune(b))
+}
+
+func isHexByte(b byte) bool {
+	return (b >= 'a' && b <= 'f') || (b >= 'A' && b <= 'F') || (b >= '0' && b <= '9')
 }
 
 var timeType = reflect.TypeOf(time.Time{})
@@ -241,17 +328,60 @@ func sanitizeStrings(value reflect.Value, clean func(string) string) {
 		if value.IsNil() {
 			return
 		}
-		iter := value.MapRange()
-		for iter.Next() {
-			updated := copyValue(iter.Value())
+		keys := value.MapKeys()
+		if value.Type().Key().Kind() == reflect.String {
+			sort.Slice(keys, func(i, j int) bool { return keys[i].String() < keys[j].String() })
+			value.Set(sanitizeStringKeyMap(value, keys, clean))
+			return
+		}
+		for _, key := range keys {
+			updated := copyValue(value.MapIndex(key))
 			sanitizeStrings(updated, clean)
-			value.SetMapIndex(iter.Key(), updated)
+			value.SetMapIndex(key, updated)
 		}
 	case reflect.String:
 		if value.CanSet() {
 			value.SetString(clean(value.String()))
 		}
 	}
+}
+
+func sanitizeStringKeyMap(value reflect.Value, keys []reflect.Value, clean func(string) string) reflect.Value {
+	// Safe keys keep their original names. Changed keys are processed in sorted
+	// source-key order, and collisions receive increasing explicit suffixes.
+	type entry struct {
+		key     reflect.Value
+		clean   string
+		value   reflect.Value
+		changed bool
+	}
+	entries := make([]entry, 0, len(keys))
+	reserved := make(map[string]bool, len(keys))
+	for _, key := range keys {
+		cleanKey := clean(key.String())
+		item := entry{key: key, clean: cleanKey, value: value.MapIndex(key), changed: cleanKey != key.String()}
+		entries = append(entries, item)
+		if !item.changed {
+			reserved[cleanKey] = true
+		}
+	}
+	result := reflect.MakeMapWithSize(value.Type(), len(entries))
+	used := make(map[string]bool, len(entries))
+	for _, item := range entries {
+		key := item.clean
+		if item.changed && (reserved[key] || used[key]) {
+			base := key
+			for suffix := 2; reserved[key] || used[key]; suffix++ {
+				key = base + " [redacted key " + strconv.Itoa(suffix) + "]"
+			}
+		}
+		used[key] = true
+		newKey := reflect.ValueOf(key).Convert(value.Type().Key())
+		updated := copyValue(item.value)
+		sanitizeStrings(updated, clean)
+		result.SetMapIndex(newKey, updated)
+	}
+	return result
 }
 
 func copyValue(value reflect.Value) reflect.Value {

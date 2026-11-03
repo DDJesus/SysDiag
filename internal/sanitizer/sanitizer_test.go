@@ -394,3 +394,73 @@ func TestSanitizeTextRedactsPathsAndIPsButPreservesTechnicalText(t *testing.T) {
 		t.Errorf("SanitizeText removed useful technical text or failed to mark hostname: %q", got)
 	}
 }
+
+func TestSanitizeTextRedactsEveryRepeatedIdentifierWithoutEatingDelimiters(t *testing.T) {
+	t.Setenv("USERNAME", "Bob")
+	t.Setenv("USERDOMAIN", "SYNTH-CORP")
+	input := "Bob Bob,Bob; NODE-17 NODE-17,NODE-17; SYNTH-CORP SYNTH-CORP,SYNTH-CORP"
+	want := "[USER_REDACTED] [USER_REDACTED],[USER_REDACTED]; REDACTED-HOST REDACTED-HOST,REDACTED-HOST; [DOMAIN_REDACTED] [DOMAIN_REDACTED],[DOMAIN_REDACTED]"
+	if got := sanitizer.SanitizeText(input, "NODE-17"); got != want {
+		t.Fatalf("SanitizeText() = %q, want %q", got, want)
+	}
+}
+
+func TestSanitizeReportRedactsRepeatedServiceAccounts(t *testing.T) {
+	t.Setenv("USERNAME", "Bob")
+	t.Setenv("USERDOMAIN", "SYNTH-CORP")
+	report := models.NewDiagnosticReport()
+	report.Metadata.Hostname = "NODE-17"
+	report.Data.Services = &models.ServicesMetrics{Services: []models.ServiceInfo{{Account: `ACME\AgentSvc`}}}
+	report.Findings = []models.Finding{{
+		Observation: `ACME\AgentSvc; ACME\AgentSvc`,
+		Evidence:    map[string]interface{}{"account_text": `ACME\AgentSvc,ACME\AgentSvc`},
+	}}
+	sanitizer.SanitizeReport(report)
+	if got, want := report.Findings[0].Observation, "[ACCOUNT_REDACTED]; [ACCOUNT_REDACTED]"; got != want {
+		t.Fatalf("repeated service account = %q, want %q", got, want)
+	}
+	if got, want := report.Findings[0].Evidence["account_text"], "[ACCOUNT_REDACTED],[ACCOUNT_REDACTED]"; got != want {
+		t.Fatalf("repeated service account in evidence = %q, want %q", got, want)
+	}
+}
+
+func TestSanitizeReportRedactsNestedEvidenceKeysWithoutOverwritingCollisions(t *testing.T) {
+	t.Setenv("USERNAME", "Bob")
+	report := models.NewDiagnosticReport()
+	report.Findings = []models.Finding{{Evidence: map[string]interface{}{
+		"Bob":                              "first value",
+		"BOB":                              "second value",
+		"[USER_REDACTED]":                  "ordinary existing key",
+		"[USER_REDACTED] [redacted key 2]": "ordinary suffix key",
+		"process_name":                     "worker.exe",
+		"nested": map[string]interface{}{
+			"203.0.113.9":   "address keyed value",
+			"[IP_REDACTED]": "ordinary IP token key",
+			"items":         []interface{}{map[string]interface{}{"Bob": "slice nested value"}},
+		},
+	}}}
+	sanitizer.SanitizeReport(report)
+	evidence := report.Findings[0].Evidence
+	if evidence["[USER_REDACTED]"] != "ordinary existing key" || evidence["[USER_REDACTED] [redacted key 2]"] != "ordinary suffix key" || evidence["process_name"] != "worker.exe" {
+		t.Fatalf("ordinary evidence keys or values changed unexpectedly: %#v", evidence)
+	}
+	if evidence["[USER_REDACTED] [redacted key 3]"] != "second value" || evidence["[USER_REDACTED] [redacted key 4]"] != "first value" {
+		t.Fatalf("sanitized key collision lost or misassigned data: %#v", evidence)
+	}
+	nested := evidence["nested"].(map[string]interface{})
+	if nested["[IP_REDACTED]"] != "ordinary IP token key" || nested["[IP_REDACTED] [redacted key 2]"] != "address keyed value" {
+		t.Fatalf("nested IP key collision lost data: %#v", nested)
+	}
+	items := nested["items"].([]interface{})
+	if items[0].(map[string]interface{})["[USER_REDACTED]"] != "slice nested value" {
+		t.Fatalf("nested slice map key was not sanitized: %#v", items)
+	}
+}
+
+func TestSanitizeTextRedactsCompleteIPAddressForms(t *testing.T) {
+	input := "v4=203.0.113.7 v4_bracket=[198.51.100.9] v6=2001:db8::1 full=2001:db8:0:0:0:0:2:1 mapped=::ffff:192.0.2.13 mapped_bracket=[::ffff:192.0.2.13] bracket=[2001:db8::2] scope=fe80::abcd%en0 linklocal=[fe80::1%eth0] port=192.0.2.10:443"
+	want := "v4=[IP_REDACTED] v4_bracket=[IP_REDACTED] v6=[IP_REDACTED] full=[IP_REDACTED] mapped=[IP_REDACTED] mapped_bracket=[IP_REDACTED] bracket=[IP_REDACTED] scope=[IP_REDACTED] linklocal=[IP_REDACTED] port=[IP_REDACTED]:443"
+	if got := sanitizer.SanitizeText(input); got != want {
+		t.Fatalf("SanitizeText() = %q, want %q", got, want)
+	}
+}
