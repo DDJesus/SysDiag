@@ -95,6 +95,94 @@ func TestRunCommand_SuccessAndInvalidProfileFallback(t *testing.T) {
 	}
 }
 
+func TestRun_SanitizeRedactsDisplayedArtifactsAndPreservesOptInDefault(t *testing.T) {
+	t.Setenv("USERNAME", "SyntheticRunnerUser")
+	const host = "SYNTH-RUNNER-HOST"
+	const outputDir = `C:\Users\SyntheticRunnerUser\Reports`
+	for _, sanitize := range []bool{false, true} {
+		name := "unsanitized default"
+		args := []string(nil)
+		if sanitize {
+			name = "sanitize enabled"
+			args = []string{"--sanitize"}
+		}
+		t.Run(name, func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			deps := testDependencies()
+			deps.hostname = func() (string, error) { return host, nil }
+			deps.probes = func() []collector.Probe {
+				return []collector.Probe{
+					stubProbe{id: "system", category: collector.CategorySystem, profiles: []string{"quick", "deep"},
+						data: &models.SystemMetrics{Hostname: host, OSName: "Test OS"}},
+				}
+			}
+			deps.resolveOutputDir = func(string) (string, bool, error) { return outputDir, false, nil }
+			artifacts := make(map[string]*memoryWriteCloser)
+			deps.createFile = func(path string) (io.WriteCloser, error) {
+				file := &memoryWriteCloser{}
+				artifacts[path] = file
+				return file, nil
+			}
+			code := runCommand(context.Background(), args, nil, &stdout, &stderr, deps)
+			if code != 0 {
+				t.Fatalf("run returned %d: %s", code, stderr.String())
+			}
+			if len(artifacts) != 2 {
+				t.Fatalf("created %d artifacts, want JSON and HTML", len(artifacts))
+			}
+			jsonPath := ""
+			for path := range artifacts {
+				if strings.HasSuffix(path, ".json") {
+					jsonPath = path
+					report, err := models.FromJSON(artifacts[path].Bytes())
+					if err != nil {
+						t.Fatalf("saved JSON is invalid: %v", err)
+					}
+					if sanitize && (report.Metadata.Hostname != "REDACTED-HOST" || strings.Contains(report.Metadata.OutputDirectory, "SyntheticRunnerUser")) {
+						t.Errorf("sanitized JSON metadata leaked identifiers: %#v", report.Metadata)
+					}
+					if !sanitize && report.Metadata.Hostname != host {
+						t.Errorf("default JSON unexpectedly sanitized hostname: %q", report.Metadata.Hostname)
+					}
+				}
+				if strings.HasSuffix(path, ".html") {
+					html := artifacts[path].String()
+					if sanitize && (strings.Contains(html, host) || strings.Contains(html, "SyntheticRunnerUser")) {
+						t.Error("sanitized HTML artifact leaked a hostname or username")
+					}
+					if !sanitize && !strings.Contains(html, host) {
+						t.Error("default HTML artifact unexpectedly sanitized the hostname")
+					}
+				}
+				if sanitize && strings.Contains(filepath.Base(path), host) {
+					t.Errorf("sanitized artifact filename contains host: %s", filepath.Base(path))
+				}
+				if !sanitize && strings.HasSuffix(path, ".json") && !strings.Contains(filepath.Base(path), host) {
+					t.Errorf("default artifact filename unexpectedly removed host: %s", filepath.Base(path))
+				}
+			}
+			if sanitize {
+				if !strings.Contains(stdout.String(), "Sanitized Machine Data (Canonical JSON)") {
+					t.Error("sanitized run did not identify its JSON output as sanitized")
+				}
+				if strings.Contains(stdout.String(), host) || strings.Contains(stdout.String(), "SyntheticRunnerUser") {
+					t.Errorf("sanitized terminal output exposed an identifier: %s", stdout.String())
+				}
+				if !strings.Contains(filepath.Base(jsonPath), "REDACTED-HOST") {
+					t.Errorf("sanitized JSON filename does not use the host token: %s", jsonPath)
+				}
+			} else {
+				if !strings.Contains(stdout.String(), "Raw Machine Data (Canonical JSON)") {
+					t.Error("default run unexpectedly marked canonical output as sanitized")
+				}
+				if !strings.Contains(stdout.String(), host) || !strings.Contains(stdout.String(), "SyntheticRunnerUser") {
+					t.Errorf("default output unexpectedly sanitized identifiers: %s", stdout.String())
+				}
+			}
+		})
+	}
+}
+
 func TestRunCommand_InvalidOption(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := runCommand(context.Background(), []string{"--not-a-real-option"}, nil, &stdout, &stderr, dependencies{})

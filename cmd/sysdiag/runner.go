@@ -166,12 +166,18 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 		execPath = os.Args[0]
 	}
 	resolvedOutDir, fellBack, err := deps.resolveOutputDir(opts.outputDir)
-	if err != nil {
-		fmt.Fprintf(stderr, "Warning: unable to resolve output directory: %v\n", err)
-	}
 	hostname, _ := deps.hostname()
 	if hostname == "" {
 		hostname = "UNKNOWN-HOST"
+	}
+	displayText := func(value string) string {
+		if opts.sanitize {
+			return sanitizer.SanitizeText(value, hostname)
+		}
+		return value
+	}
+	if err != nil {
+		fmt.Fprintf(stderr, "Warning: unable to resolve output directory: %s\n", displayText(err.Error()))
 	}
 
 	report := models.NewDiagnosticReport()
@@ -182,7 +188,7 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 		ExecutionPath: execPath, OutputDirectory: resolvedOutDir,
 	}
 	if fellBack && !opts.jsonOnly {
-		fmt.Fprintf(stderr, "\n[Notice] Target output directory is read-only or inaccessible. Redirected output to: %s\n\n", resolvedOutDir)
+		fmt.Fprintf(stderr, "\n[Notice] Target output directory is read-only or inaccessible. Redirected output to: %s\n\n", displayText(resolvedOutDir))
 	}
 
 	registry := collector.NewRegistry()
@@ -202,16 +208,20 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 	if report.Data.System != nil {
 		report.Metadata.OSVersion = report.Data.System.OSName
 		report.Metadata.Hostname = report.Data.System.Hostname
+		hostname = report.Data.System.Hostname
 	}
 	deps.newRuleEvaluator().EvaluateAll(ctx, report)
 	if opts.sanitize {
 		deps.sanitizeReport(report)
 	}
+	if opts.sanitize {
+		displayText = func(value string) string { return sanitizer.SanitizeText(value, hostname) }
+	}
 	report.Metadata.ScanDurationMS = time.Since(scanStartTime).Milliseconds()
 
 	if opts.jsonOnly {
 		if err := deps.jsonReporter.Generate(report, stdout); err != nil {
-			fmt.Fprintf(stderr, "Error exporting JSON: %v\n", err)
+			fmt.Fprintf(stderr, "Error exporting JSON: %s\n", displayText(err.Error()))
 			return 1
 		}
 		if scanCanceled {
@@ -220,7 +230,7 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 		return 0
 	}
 	if err := deps.terminalReporter.Generate(report, stdout); err != nil {
-		fmt.Fprintf(stderr, "Warning: failed to render terminal summary: %v\n", err)
+		fmt.Fprintf(stderr, "Warning: failed to render terminal summary: %s\n", displayText(err.Error()))
 	}
 
 	timestamp := scanStartTime.Format("20060102_150405")
@@ -228,7 +238,7 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 	jsonPath := filepath.Join(resolvedOutDir, fmt.Sprintf("sysdiag_report_%s_%s.json", cleanHost, timestamp))
 	jsonErr := writeReportFile(jsonPath, "JSON", deps.jsonReporter, report, deps.createFile)
 	if jsonErr != nil {
-		fmt.Fprintf(stderr, "Error: %v\n", jsonErr)
+		fmt.Fprintf(stderr, "Error: %s\n", displayText(jsonErr.Error()))
 	}
 
 	var htmlFilename string
@@ -238,12 +248,12 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 		htmlRep, err := deps.newHTMLReporter()
 		if err != nil {
 			htmlErr = fmt.Errorf("failed to initialize HTML reporter: %w", err)
-			fmt.Fprintf(stderr, "Error: %v\n", htmlErr)
+			fmt.Fprintf(stderr, "Error: %s\n", displayText(htmlErr.Error()))
 			htmlFilename = ""
 		} else {
 			if err := writeReportFile(htmlFilename, "HTML", htmlRep, report, deps.createFile); err != nil {
 				htmlErr = err
-				fmt.Fprintf(stderr, "Error: %v\n", err)
+				fmt.Fprintf(stderr, "Error: %s\n", displayText(err.Error()))
 				htmlFilename = ""
 			}
 		}
@@ -264,11 +274,15 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 	if htmlFilename != "" {
 		fmt.Fprintln(stdout, " [!] WHAT TO SEND:")
 		fmt.Fprintln(stdout, "     Please send this interactive HTML report to your technician or support team:")
-		fmt.Fprintf(stdout, "     --> %s\n\n", htmlFilename)
+		fmt.Fprintf(stdout, "     --> %s\n\n", displayText(htmlFilename))
 	}
 	if jsonErr == nil {
-		fmt.Fprintln(stdout, " [*] Raw Machine Data (Canonical JSON):")
-		fmt.Fprintf(stdout, "     --> %s\n", jsonPath)
+		label := "Raw Machine Data (Canonical JSON)"
+		if opts.sanitize {
+			label = "Sanitized Machine Data (Canonical JSON)"
+		}
+		fmt.Fprintf(stdout, " [*] %s:\n", label)
+		fmt.Fprintf(stdout, "     --> %s\n", displayText(jsonPath))
 	}
 	fmt.Fprintln(stdout, "================================================================================")
 	if opts.pause || deps.isLaunchedFromExplorer() {

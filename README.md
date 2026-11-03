@@ -24,6 +24,18 @@ Double-click `sysdiag.exe` on Windows or run it from a terminal. By default, rep
 
 `--json-only` writes canonical JSON to stdout for pipelines. Normal runs produce JSON and standalone HTML unless `--no-html` is supplied. The HTML file can be opened directly in a browser; no server or network connection is required.
 
+`--sanitize` is opt-in. It replaces hostnames, account names/domains, disk
+serials, MAC addresses, IP addresses, and user-directory components with stable
+tokens such as `REDACTED-HOST`, `[USER_REDACTED]`, `[DOMAIN_REDACTED]`,
+`[HOME_REDACTED]`, `[ACCOUNT_REDACTED]`, `[SERIAL_REDACTED]`, `[MAC_REDACTED]`, and
+`[IP_REDACTED]`. Useful technical values such as operating
+system names, filesystems, and ordinary DNS test names remain visible. Sanitized
+report filenames use the `REDACTED-HOST` token; the requested output directory
+is still used, while its displayed and reported path is sanitized.
+Evidence map keys that need redaction receive the same tokens as values. If a
+redacted key conflicts with an existing key, SysDiag preserves every entry and
+adds a deterministic ` [redacted key N]` suffix to the colliding key.
+
 ### Network DNS observation
 
 The Windows and macOS network probes perform one bounded DNS lookup for
