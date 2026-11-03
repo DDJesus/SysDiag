@@ -257,3 +257,24 @@ func TestReporters_HTMLIsSelfContainedAndMatchesJSON(t *testing.T) {
 		t.Fatal("HTML and JSON do not contain the same host metadata")
 	}
 }
+
+func TestHTMLReportQualifiesNoFindingsWhenCollectionIsIncomplete(t *testing.T) {
+	report := models.NewDiagnosticReport()
+	report.CollectionStatus = models.CollectionStatus{
+		TotalProbes: 2, Successful: 1, Unsupported: 1,
+		Probes: []models.ProbeRecord{{ProbeID: "probe_memory", Category: "memory", Status: "Unsupported", Reason: "not implemented on this platform"}},
+	}
+	htmlRep, err := htmlReporter.NewReporter()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var output bytes.Buffer
+	if err := htmlRep.Generate(report, &output); err != nil {
+		t.Fatal(err)
+	}
+	for _, phrase := range []string{"collection is incomplete", "unsupported on this platform", "not implemented on this platform", "Probe Collection States"} {
+		if !strings.Contains(output.String(), phrase) {
+			t.Errorf("incomplete HTML report does not explain %q", phrase)
+		}
+	}
+}

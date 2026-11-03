@@ -24,6 +24,15 @@ Double-click `sysdiag.exe` on Windows or run it from a terminal. By default, rep
 
 `--json-only` writes canonical JSON to stdout for pipelines. Normal runs produce JSON and standalone HTML unless `--no-html` is supplied. The HTML file can be opened directly in a browser; no server or network connection is required.
 
+### Network DNS observation
+
+The Windows and macOS network probes perform one bounded DNS lookup for
+`example.com` using the system-configured resolver, with a 1.5-second timeout.
+This can send a DNS request through that resolver. It measures name resolution
+only; resolving `example.com` does not verify general internet connectivity or
+the reachability of other services. Adapter observations are retained if the
+lookup fails, and the network probe is reported as partial.
+
 | Flag | Description |
 |---|---|
 | `--profile quick\|deep` | Select diagnostic profile (default `quick`) |

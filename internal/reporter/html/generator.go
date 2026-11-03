@@ -320,6 +320,7 @@ const reportTemplate = `<!DOCTYPE html>
             <p style="font-size: 0.9rem; color: var(--text-muted);">
                 {{if gt .Report.CollectionStatus.RequiresAdmin 0}}* {{.Report.CollectionStatus.RequiresAdmin}} probe(s) required elevated Administrator privileges to query full telemetry. {{end}}
                 {{if gt .Report.CollectionStatus.Partial 0}}* {{.Report.CollectionStatus.Partial}} probe(s) returned partial results. {{end}}
+				{{if gt .Report.CollectionStatus.Unsupported 0}}* {{.Report.CollectionStatus.Unsupported}} probe(s) are unsupported on this platform. {{end}}
                 {{if gt .Report.CollectionStatus.Timeout 0}}* {{.Report.CollectionStatus.Timeout}} probe(s) timed out. {{end}}
                 {{if gt .Report.CollectionStatus.Canceled 0}}* {{.Report.CollectionStatus.Canceled}} probe(s) canceled during collection. {{end}}
                 {{if gt .Report.CollectionStatus.Skipped 0}}* {{.Report.CollectionStatus.Skipped}} probe(s) were not started after cancellation. {{end}}
@@ -334,12 +335,19 @@ const reportTemplate = `<!DOCTYPE html>
         </div>
 
         {{if eq (len .Report.Findings) 0}}
+		{{if eq .DegradedProbesCount 0}}
             <div class="card" style="border-left: 4px solid var(--success);">
                 <div style="color: var(--success); font-weight: 600;">No Anomalies Identified</div>
                 <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
                     All analyzed subsystems are operating within nominal empirical thresholds.
                 </p>
             </div>
+		{{else}}
+			<div class="card" style="border-left: 4px solid var(--warning);">
+				<div style="color: var(--warning); font-weight: 600;">No Anomalies Identified in the collected data; collection is incomplete.</div>
+				<p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">Unavailable or incomplete subsystems could not be evaluated. Review the collection states and reasons below.</p>
+			</div>
+		{{end}}
         {{else}}
             <div class="filter-bar">
                 <button class="filter-btn active" onclick="filterFindings('ALL')">All ({{len .Report.Findings}})</button>
@@ -561,6 +569,17 @@ const reportTemplate = `<!DOCTYPE html>
                 {{if .PrivilegeRequired}}<span style="color: var(--critical); font-weight: 600;">[Requires {{.PrivilegeRequired}}]</span>{{end}}
             </div>
             {{end}}
+        </div>
+        {{end}}
+
+        {{if .Report.CollectionStatus.Probes}}
+        <h2 class="section-title">Probe Collection States</h2>
+        <div class="card data-table-container">
+            <table class="data-table"><thead><tr><th>Probe</th><th>Category</th><th>Status</th><th>Reason</th></tr></thead><tbody>
+            {{range .Report.CollectionStatus.Probes}}
+            <tr><td>{{if .Name}}{{.Name}}{{else}}{{.ProbeID}}{{end}}</td><td>{{.Category}}</td><td>{{.Status}}</td><td>{{.Reason}}</td></tr>
+            {{end}}
+            </tbody></table>
         </div>
         {{end}}
 

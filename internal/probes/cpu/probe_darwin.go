@@ -5,19 +5,12 @@ package cpu
 
 import (
 	"context"
-	"runtime"
+	"fmt"
 	"time"
 
 	"github.com/systemdiag/sysdiag/internal/collector"
-	"github.com/systemdiag/sysdiag/internal/models"
 )
 
 func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
-	numCPU := runtime.NumCPU()
-	metrics := &models.CPUMetrics{
-		Model:         "Apple Silicon / Generic macOS CPU",
-		PhysicalCores: numCPU,
-		LogicalCores:  numCPU,
-	}
-	return metrics, collector.StatusSuccess, nil
+	return nil, collector.StatusUnsupported, fmt.Errorf("macOS CPU topology and utilization collection is not implemented")
 }

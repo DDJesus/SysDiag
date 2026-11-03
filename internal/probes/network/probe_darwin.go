@@ -6,7 +6,6 @@ package network
 import (
 	"context"
 	"net"
-	"os"
 	"time"
 
 	"github.com/systemdiag/sysdiag/internal/collector"
@@ -60,37 +59,9 @@ func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, coll
 		Adapters: adapterMetrics,
 		DNSTest:  dnsTest,
 	}
-
-	return metrics, collector.StatusSuccess, nil
+	return networkCollectionResult(metrics)
 }
 
 func runDNSTest(parentCtx context.Context) *models.DNSResolutionTest {
-	target := "localhost"
-	if h, err := os.Hostname(); err == nil && h != "" {
-		target = h
-	}
-
-	dnsCtx, cancel := context.WithTimeout(parentCtx, 1500*time.Millisecond)
-	defer cancel()
-
-	start := time.Now()
-	ips, err := net.DefaultResolver.LookupIPAddr(dnsCtx, target)
-	duration := float64(time.Since(start).Microseconds()) / 1000.0
-
-	testResult := &models.DNSResolutionTest{
-		QueryTarget: target,
-		DurationMS:  duration,
-	}
-
-	if err != nil {
-		testResult.Success = false
-		testResult.Error = err.Error()
-	} else {
-		testResult.Success = true
-		for _, ip := range ips {
-			testResult.ResolvedIPs = append(testResult.ResolvedIPs, ip.String())
-		}
-	}
-
-	return testResult
+	return runBoundedDNSTest(parentCtx, net.DefaultResolver.LookupIPAddr)
 }
