@@ -1365,7 +1365,7 @@ func queryEventChannel(ctx context.Context, channel string, query string, maxRec
 			return events, err
 		}
 		var returned uint32
-		ret, _, _ := procEvtNext.Call(
+		ret, _, callErr := procEvtNext.Call(
 			hQuery,
 			uintptr(batchSize),
 			uintptr(unsafe.Pointer(&hEvents[0])),
@@ -1373,7 +1373,14 @@ func queryEventChannel(ctx context.Context, channel string, query string, maxRec
 			0,
 			uintptr(unsafe.Pointer(&returned)),
 		)
-		if ret == 0 || returned == 0 {
+		if ret == 0 {
+			done, err := classifyEventLogNextResult(ret, callErr)
+			if done {
+				break
+			}
+			return events, err
+		}
+		if returned == 0 {
 			break
 		}
 

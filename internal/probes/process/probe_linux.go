@@ -44,7 +44,7 @@ func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, coll
 
 	for _, entry := range entries {
 		if err := ctx.Err(); err != nil {
-			metrics := buildProcessMetrics(list, totalThreads)
+			metrics := buildProcessMetrics(list, totalThreads, clockErr == nil)
 			return metrics, collector.StatusPartial, fmt.Errorf("process enumeration canceled after partial results: %w", err)
 		}
 		if !entry.IsDir() {
@@ -107,7 +107,7 @@ func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, coll
 		})
 	}
 
-	metrics := buildProcessMetrics(list, totalThreads)
+	metrics := buildProcessMetrics(list, totalThreads, clockErr == nil)
 	if ctx.Err() != nil {
 		return metrics, collector.StatusPartial, fmt.Errorf("process enumeration canceled after partial results: %w", ctx.Err())
 	}
@@ -199,7 +199,7 @@ func linuxClockTicks(ctx context.Context) (uint64, error) {
 	return ticks, nil
 }
 
-func buildProcessMetrics(list []models.ProcessSummary, totalThreads int) *models.ProcessMetrics {
+func buildProcessMetrics(list []models.ProcessSummary, totalThreads int, cpuTimeAvailable bool) *models.ProcessMetrics {
 	totalProcs := len(list)
 
 	// Sort Top Memory
@@ -213,21 +213,24 @@ func buildProcessMetrics(list []models.ProcessSummary, totalThreads int) *models
 		topMemCount = len(memList)
 	}
 
-	// Sort Top CPU Time
-	cpuList := make([]models.ProcessSummary, len(list))
-	copy(cpuList, list)
-	sort.Slice(cpuList, func(i, j int) bool {
-		return cpuList[i].CPUTimeSeconds > cpuList[j].CPUTimeSeconds
-	})
-	topCPUCount := 5
-	if len(cpuList) < topCPUCount {
-		topCPUCount = len(cpuList)
+	topCPU := make([]models.ProcessSummary, 0)
+	if cpuTimeAvailable {
+		cpuList := make([]models.ProcessSummary, len(list))
+		copy(cpuList, list)
+		sort.Slice(cpuList, func(i, j int) bool {
+			return cpuList[i].CPUTimeSeconds > cpuList[j].CPUTimeSeconds
+		})
+		topCPUCount := 5
+		if len(cpuList) < topCPUCount {
+			topCPUCount = len(cpuList)
+		}
+		topCPU = cpuList[:topCPUCount]
 	}
 
 	return &models.ProcessMetrics{
 		TotalProcesses: totalProcs,
 		TotalThreads:   totalThreads,
-		TopCPU:         cpuList[:topCPUCount],
+		TopCPU:         topCPU,
 		TopMemory:      memList[:topMemCount],
 	}
 }
