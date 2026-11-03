@@ -116,6 +116,7 @@ func (e *Engine) Execute(ctx context.Context, probes []Probe, sampleDuration tim
 			deadline, hasDeadline := probeCtx.Deadline()
 			if probeCtx.Err() == context.DeadlineExceeded && hasDeadline && !finished.Before(deadline) {
 				res.Status = StatusTimeout
+				res.Data = data
 				res.Err = fmt.Errorf("probe timed out after %v", e.probeTimeout)
 			} else if status == StatusCanceled || errors.Is(err, context.Canceled) {
 				res.Status = StatusCanceled

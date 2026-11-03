@@ -22,7 +22,7 @@ func (p *Probe) collect(ctx context.Context, sampleDuration time.Duration) (inte
 
 	metrics, err := winapi.GetReliabilityEvents(ctx, timeWindowHours, maxRecords)
 	if err != nil {
-		return nil, collector.StatusPartial, err
+		return metrics, collector.StatusPartial, err
 	}
 
 	return metrics, collector.StatusSuccess, nil
