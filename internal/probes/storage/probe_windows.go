@@ -5,6 +5,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/systemdiag/sysdiag/internal/collector"
@@ -33,7 +34,7 @@ func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, coll
 	}
 
 	var diskMetrics []models.PhysicalDiskMetrics
-	disks, _ := winapi.GetPhysicalDisks()
+	disks, diskErr := winapi.GetPhysicalDisks()
 	for _, d := range disks {
 		diskMetrics = append(diskMetrics, models.PhysicalDiskMetrics{
 			DeviceID:     d.DeviceID,
@@ -50,6 +51,9 @@ func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, coll
 		PhysicalDisks: diskMetrics,
 	}
 
+	if diskErr != nil {
+		return metrics, collector.StatusPartial, fmt.Errorf("physical disk collection failed: %w", diskErr)
+	}
 	return metrics, collector.StatusSuccess, nil
 }
 

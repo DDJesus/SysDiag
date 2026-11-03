@@ -5,8 +5,8 @@ package network
 
 import (
 	"context"
+	"fmt"
 	"net"
-	"os"
 	"time"
 
 	"github.com/systemdiag/sysdiag/internal/collector"
@@ -51,15 +51,15 @@ func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, coll
 		Adapters: adapterMetrics,
 		DNSTest:  dnsTest,
 	}
-
+	if !dnsTest.Success {
+		return metrics, collector.StatusPartial, fmt.Errorf("DNS lookup for %q failed: %s", dnsTest.QueryTarget, dnsTest.Error)
+	}
 	return metrics, collector.StatusSuccess, nil
 }
 
 func runDNSTest(parentCtx context.Context) *models.DNSResolutionTest {
-	target := "localhost"
-	if h, err := os.Hostname(); err == nil && h != "" {
-		target = h
-	}
+	// A public DNS name checks name resolution without claiming internet access.
+	target := "example.com"
 
 	dnsCtx, cancel := context.WithTimeout(parentCtx, 1500*time.Millisecond)
 	defer cancel()
