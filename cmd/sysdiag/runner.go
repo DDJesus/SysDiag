@@ -34,7 +34,10 @@ import (
 	"github.com/systemdiag/sysdiag/internal/sanitizer"
 )
 
-const ToolVersion = "1.0.0"
+// These values are overridden for release builds with Go linker flags.
+// Local builds retain useful identifiers without requiring generated files.
+var ToolVersion = "dev"
+var SourceCommit = "unknown"
 
 type commandOptions struct {
 	profile, outputDir                string
@@ -134,7 +137,7 @@ func runCommand(ctx context.Context, args []string, stdin io.Reader, stdout, std
 		return 2
 	}
 	if opts.version {
-		fmt.Fprintf(stdout, "sysdiag version %s (%s/%s)\n", ToolVersion, runtime.GOOS, runtime.GOARCH)
+		fmt.Fprintf(stdout, "sysdiag version %s (%s/%s, commit %s)\n", ToolVersion, runtime.GOOS, runtime.GOARCH, SourceCommit)
 		return 0
 	}
 	return run(ctx, opts, stdin, stdout, stderr, deps)
