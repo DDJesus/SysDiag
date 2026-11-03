@@ -92,7 +92,9 @@ func defaultDependencies() dependencies {
 		newHTMLReporter: func() (reporter.Reporter, error) {
 			return htmlReporter.NewReporter()
 		},
-		createFile:             func(path string) (io.WriteCloser, error) { return os.Create(path) },
+		createFile: func(path string) (io.WriteCloser, error) {
+			return os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+		},
 		isLaunchedFromExplorer: platform.IsLaunchedFromExplorer,
 	}
 }
@@ -220,21 +222,25 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 
 	timestamp := scanStartTime.Format("20060102_150405")
 	cleanHost := strings.ReplaceAll(report.Metadata.Hostname, " ", "_")
-	jsonFilename := filepath.Join(resolvedOutDir, fmt.Sprintf("sysdiag_report_%s_%s.json", cleanHost, timestamp))
-	if err := writeReportFile(jsonFilename, "JSON", deps.jsonReporter, report, deps.createFile); err != nil {
-		fmt.Fprintf(stderr, "Warning: %v\n", err)
+	jsonPath := filepath.Join(resolvedOutDir, fmt.Sprintf("sysdiag_report_%s_%s.json", cleanHost, timestamp))
+	jsonErr := writeReportFile(jsonPath, "JSON", deps.jsonReporter, report, deps.createFile)
+	if jsonErr != nil {
+		fmt.Fprintf(stderr, "Error: %v\n", jsonErr)
 	}
 
 	var htmlFilename string
+	var htmlErr error
 	if !opts.noHTML {
 		htmlFilename = filepath.Join(resolvedOutDir, fmt.Sprintf("sysdiag_report_%s_%s.html", cleanHost, timestamp))
 		htmlRep, err := deps.newHTMLReporter()
 		if err != nil {
-			fmt.Fprintf(stderr, "Warning: failed to initialize HTML reporter: %v\n", err)
+			htmlErr = fmt.Errorf("failed to initialize HTML reporter: %w", err)
+			fmt.Fprintf(stderr, "Error: %v\n", htmlErr)
 			htmlFilename = ""
 		} else {
 			if err := writeReportFile(htmlFilename, "HTML", htmlRep, report, deps.createFile); err != nil {
-				fmt.Fprintf(stderr, "Warning: %v\n", err)
+				htmlErr = err
+				fmt.Fprintf(stderr, "Error: %v\n", err)
 				htmlFilename = ""
 			}
 		}
@@ -245,6 +251,8 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 	if scanCanceled {
 		fmt.Fprintf(stdout, " [INCOMPLETE] Diagnostic collection canceled after %d ms. Partial results were saved.\n", report.Metadata.ScanDurationMS)
 		fmt.Fprintf(stdout, " Canceled probes: %d; not started: %d.\n", report.CollectionStatus.Canceled, report.CollectionStatus.Skipped)
+	} else if jsonErr != nil || htmlErr != nil {
+		fmt.Fprintln(stdout, " [INCOMPLETE] Diagnostic collection completed, but required report artifact generation failed; partial results were retained.")
 	} else {
 		fmt.Fprintf(stdout, " [SUCCESS] Diagnostic collection completed safely in %d ms.\n", report.Metadata.ScanDurationMS)
 	}
@@ -255,14 +263,19 @@ func run(ctx context.Context, opts commandOptions, stdin io.Reader, stdout, stde
 		fmt.Fprintln(stdout, "     Please send this interactive HTML report to your technician or support team:")
 		fmt.Fprintf(stdout, "     --> %s\n\n", htmlFilename)
 	}
-	fmt.Fprintln(stdout, " [*] Raw Machine Data (Canonical JSON):")
-	fmt.Fprintf(stdout, "     --> %s\n", jsonFilename)
+	if jsonErr == nil {
+		fmt.Fprintln(stdout, " [*] Raw Machine Data (Canonical JSON):")
+		fmt.Fprintf(stdout, "     --> %s\n", jsonPath)
+	}
 	fmt.Fprintln(stdout, "================================================================================")
 	if opts.pause || deps.isLaunchedFromExplorer() {
 		fmt.Fprintln(stdout, "\nPress Enter to exit...")
 		_, _ = bufio.NewReader(stdin).ReadString('\n')
 	}
 	if scanCanceled {
+		return 1
+	}
+	if jsonErr != nil || htmlErr != nil {
 		return 1
 	}
 	return 0
@@ -304,5 +317,9 @@ func writeReportFile(path, format string, rep reporter.Reporter, report *models.
 	if closeErr != nil {
 		closeErr = fmt.Errorf("failed to close %s report: %w", format, closeErr)
 	}
-	return errors.Join(generateErr, closeErr)
+	combined := errors.Join(generateErr, closeErr)
+	if combined != nil {
+		_ = os.Remove(path)
+	}
+	return combined
 }
