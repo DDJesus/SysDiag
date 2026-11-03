@@ -309,6 +309,10 @@ func writeReportFile(path, format string, rep reporter.Reporter, report *models.
 	if err != nil {
 		return fmt.Errorf("failed to save %s report: %w", format, err)
 	}
+	var createdInfo os.FileInfo
+	if owned, ok := f.(*os.File); ok {
+		createdInfo, _ = owned.Stat()
+	}
 	generateErr := rep.Generate(report, f)
 	closeErr := f.Close()
 	if generateErr != nil {
@@ -319,7 +323,11 @@ func writeReportFile(path, format string, rep reporter.Reporter, report *models.
 	}
 	combined := errors.Join(generateErr, closeErr)
 	if combined != nil {
-		_ = os.Remove(path)
+		if createdInfo != nil {
+			if current, pathErr := os.Stat(path); pathErr == nil && os.SameFile(createdInfo, current) {
+				_ = os.Remove(path)
+			}
+		}
 	}
 	return combined
 }
