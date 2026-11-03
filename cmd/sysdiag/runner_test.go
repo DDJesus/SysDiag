@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -12,6 +14,7 @@ import (
 	"github.com/systemdiag/sysdiag/internal/collector"
 	"github.com/systemdiag/sysdiag/internal/models"
 	"github.com/systemdiag/sysdiag/internal/reporter"
+	jsonReporter "github.com/systemdiag/sysdiag/internal/reporter/json"
 )
 
 type stubProbe struct {
@@ -63,7 +66,7 @@ func testDependencies() dependencies {
 			},
 		}
 	}
-	deps.createFile = func(string) (io.WriteCloser, error) { return nil, errors.New("unexpected file creation") }
+	deps.createFile = func(string) (io.WriteCloser, error) { return &memoryWriteCloser{}, nil }
 	deps.isLaunchedFromExplorer = func() bool { return false }
 	return deps
 }
@@ -119,10 +122,10 @@ func TestRun_ReportsOutputAndReporterDependencyErrors(t *testing.T) {
 	deps := testDependencies()
 	deps.newHTMLReporter = func() (reporter.Reporter, error) { return nil, errors.New("renderer unavailable") }
 	code := run(context.Background(), commandOptions{profile: "quick"}, strings.NewReader(""), &stdout, &stderr, deps)
-	if code != 0 {
-		t.Errorf("optional file/reporter failures changed exit code to %d, want existing best-effort code 0", code)
+	if code != 1 {
+		t.Errorf("artifact failures exit code = %d, want 1", code)
 	}
-	for _, want := range []string{"failed to save JSON report", "failed to initialize HTML reporter: renderer unavailable"} {
+	for _, want := range []string{"failed to initialize HTML reporter: renderer unavailable"} {
 		if !strings.Contains(stderr.String(), want) {
 			t.Errorf("stderr %q does not contain %q", stderr.String(), want)
 		}
@@ -140,8 +143,8 @@ func TestRun_HTMLCreationFailureDoesNotAdvertisePath(t *testing.T) {
 	}
 
 	code := run(context.Background(), commandOptions{profile: "quick"}, strings.NewReader(""), &stdout, &stderr, deps)
-	if code != 0 {
-		t.Errorf("HTML creation failure changed exit code to %d, want 0", code)
+	if code != 1 {
+		t.Errorf("HTML creation failure exit code = %d, want 1", code)
 	}
 	if strings.Contains(stdout.String(), "WHAT TO SEND") || strings.Contains(stdout.String(), ".html") {
 		t.Errorf("handoff advertised an HTML report after creation failure: %q", stdout.String())
@@ -160,8 +163,8 @@ func TestRun_HTMLGenerationFailureDoesNotAdvertisePath(t *testing.T) {
 	}
 
 	code := run(context.Background(), commandOptions{profile: "quick"}, strings.NewReader(""), &stdout, &stderr, deps)
-	if code != 0 {
-		t.Errorf("HTML generation failure changed exit code to %d, want 0", code)
+	if code != 1 {
+		t.Errorf("HTML generation failure exit code = %d, want 1", code)
 	}
 	if strings.Contains(stdout.String(), "WHAT TO SEND") || strings.Contains(stdout.String(), ".html") {
 		t.Errorf("handoff advertised an HTML report after generation failure: %q", stdout.String())
@@ -179,6 +182,104 @@ func TestWriteReportFile_CloseFailureReturnsError(t *testing.T) {
 		t.Errorf("writeReportFile error = %v, want a close failure", err)
 	}
 }
+
+func TestWriteReportFileFailureMatrix(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		create func(string) (io.WriteCloser, error)
+		rep    reporter.Reporter
+		want   string
+	}{
+		{"create", func(string) (io.WriteCloser, error) { return nil, errors.New("create") }, failingReporter{}, "failed to save"},
+		{"render", func(string) (io.WriteCloser, error) { return &memoryWriteCloser{}, nil }, failingReporter{errors.New("render")}, "failed to write"},
+		{"write", func(string) (io.WriteCloser, error) { return &writerFailCloser{}, nil }, jsonReporter.NewReporter(), "failed to write"},
+		{"close", func(string) (io.WriteCloser, error) { return &closeFailWriteCloser{}, nil }, jsonReporter.NewReporter(), "failed to close"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := writeReportFile(filepath.Join(t.TempDir(), "report"), "JSON", tc.rep, models.NewDiagnosticReport(), tc.create)
+			if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("error=%v want %q", err, tc.want)
+			}
+		})
+	}
+}
+
+func TestWriteReportFileCleanupOwnership(t *testing.T) {
+	t.Run("failed artifact removed", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "report")
+		create := func(p string) (io.WriteCloser, error) { return os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600) }
+		if err := writeReportFile(path, "HTML", failingReporter{errors.New("render")}, models.NewDiagnosticReport(), create); err == nil {
+			t.Fatal("expected error")
+		}
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			t.Fatalf("incomplete artifact still exists: %v", err)
+		}
+	})
+	t.Run("collision preserved", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "report")
+		original := []byte("pre-existing")
+		if err := os.WriteFile(path, original, 0600); err != nil {
+			t.Fatal(err)
+		}
+		create := func(p string) (io.WriteCloser, error) { return os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600) }
+		if err := writeReportFile(path, "JSON", jsonReporter.NewReporter(), models.NewDiagnosticReport(), create); err == nil {
+			t.Fatal("expected collision")
+		}
+		got, err := os.ReadFile(path)
+		if err != nil || !bytes.Equal(got, original) {
+			t.Fatalf("pre-existing file changed: %q %v", got, err)
+		}
+	})
+}
+
+func TestRunArtifactOutcomeMatrix(t *testing.T) {
+	for _, tc := range []struct {
+		name               string
+		opts               commandOptions
+		jsonFail, htmlFail bool
+		wantCode           int
+		wantJSON, wantHTML bool
+	}{
+		{"both succeed", commandOptions{profile: "quick"}, false, false, 0, true, true},
+		{"json fails html succeeds", commandOptions{profile: "quick"}, true, false, 1, false, true},
+		{"html fails json succeeds", commandOptions{profile: "quick"}, false, true, 1, true, false},
+		{"both fail", commandOptions{profile: "quick"}, true, true, 1, false, false},
+		{"no html success", commandOptions{profile: "quick", noHTML: true}, false, false, 0, true, false},
+		{"no html json failure", commandOptions{profile: "quick", noHTML: true}, true, false, 1, false, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			deps := testDependencies()
+			if tc.jsonFail {
+				deps.jsonReporter = failingReporter{errors.New("json render")}
+			}
+			if tc.htmlFail {
+				deps.newHTMLReporter = func() (reporter.Reporter, error) { return nil, errors.New("html init") }
+			}
+			code := run(context.Background(), tc.opts, strings.NewReader(""), &stdout, &stderr, deps)
+			if code != tc.wantCode {
+				t.Errorf("exit=%d want %d", code, tc.wantCode)
+			}
+			if strings.Contains(stdout.String(), "[SUCCESS]") != (tc.wantCode == 0) {
+				t.Errorf("unexpected final status: %s", stdout.String())
+			}
+			if strings.Contains(stdout.String(), ".json") != tc.wantJSON {
+				t.Errorf("json path presence mismatch: %s", stdout.String())
+			}
+			if strings.Contains(stdout.String(), ".html") != tc.wantHTML {
+				t.Errorf("html path presence mismatch: %s", stdout.String())
+			}
+			if (tc.jsonFail || tc.htmlFail) && !strings.Contains(stderr.String(), "Error:") {
+				t.Errorf("missing artifact error: %s", stderr.String())
+			}
+		})
+	}
+}
+
+type writerFailCloser struct{}
+
+func (writerFailCloser) Write([]byte) (int, error) { return 0, errors.New("write") }
+func (writerFailCloser) Close() error              { return nil }
 
 func TestSelectProbes_ProfileAndCategoryFilters(t *testing.T) {
 	registry := collector.NewRegistry()
