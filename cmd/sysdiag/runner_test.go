@@ -106,6 +106,33 @@ func TestRunCommand_InvalidOption(t *testing.T) {
 	}
 }
 
+func TestRunCommand_VersionMetadataAndAliases(t *testing.T) {
+	originalVersion, originalCommit := ToolVersion, SourceCommit
+	t.Cleanup(func() { ToolVersion, SourceCommit = originalVersion, originalCommit })
+
+	ToolVersion, SourceCommit = "dev", "unknown"
+	for _, flag := range []string{"--version", "-v"} {
+		t.Run(flag+" defaults", func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			code := runCommand(context.Background(), []string{flag}, nil, &stdout, &stderr, dependencies{})
+			if code != 0 || !strings.Contains(stdout.String(), "sysdiag version dev (") || !strings.Contains(stdout.String(), "commit unknown)") {
+				t.Fatalf("version output = %q (exit %d), want development version and unknown commit", stdout.String(), code)
+			}
+		})
+	}
+
+	ToolVersion, SourceCommit = "0.1.0-rc.1", "0123456789abcdef0123456789abcdef01234567"
+	for _, flag := range []string{"--version", "-v"} {
+		t.Run(flag+" injected metadata", func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			code := runCommand(context.Background(), []string{flag}, nil, &stdout, &stderr, dependencies{})
+			if code != 0 || !strings.Contains(stdout.String(), "sysdiag version 0.1.0-rc.1 (") || !strings.Contains(stdout.String(), "commit 0123456789abcdef0123456789abcdef01234567)") {
+				t.Fatalf("version output = %q (exit %d), want injected release metadata", stdout.String(), code)
+			}
+		})
+	}
+}
+
 func TestRunCommand_JSONOutputFailure(t *testing.T) {
 	var stderr bytes.Buffer
 	code := runCommand(context.Background(), []string{"--json-only"}, nil, failingWriter{}, &stderr, testDependencies())

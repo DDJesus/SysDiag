@@ -94,12 +94,19 @@ jobs:
           GOOS: windows
           GOARCH: amd64
           CGO_ENABLED: '0'
-        run: go build -trimpath -o sysdiag.exe ./cmd/sysdiag
+          RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+          SOURCE_SHA: ${{ needs.validate.outputs.source_sha }}
+        run: go build -trimpath -ldflags "-X main.ToolVersion=$env:RELEASE_VERSION -X main.SourceCommit=$env:SOURCE_SHA" -o sysdiag.exe ./cmd/sysdiag
       - name: Smoke test executable
         shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+          SOURCE_SHA: ${{ needs.validate.outputs.source_sha }}
         run: |
-          ./sysdiag.exe --version
+          $versionOutput = ./sysdiag.exe --version
           if ($LASTEXITCODE -ne 0) { throw 'sysdiag --version failed' }
+          $expectedVersion = "sysdiag version $env:RELEASE_VERSION (windows/amd64, commit $env:SOURCE_SHA)"
+          if ($versionOutput.Trim() -cne $expectedVersion) { throw "Version metadata mismatch. Expected '$expectedVersion'; got '$versionOutput'" }
           ./sysdiag.exe --help
           if ($LASTEXITCODE -ne 0) { throw 'sysdiag --help failed' }
       - name: Record Go version
