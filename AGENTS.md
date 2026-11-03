@@ -1,5 +1,12 @@
 # SysDiag Engineering Guide
 
+## Product
+
+SysDiag is a portable, read-only Go diagnostic utility. It collects and analyzes
+observations, then writes canonical JSON and a self-contained HTML report. End
+users need no Python, Node.js, local server, or Explorer application. Reports
+are generated locally; there is no automatic upload.
+
 ## Architecture
 
 - `cmd/sysdiag` contains the Go diagnostic CLI and command-line entry point.
@@ -7,7 +14,6 @@
 - `internal/models` defines the shared diagnostic report and its JSON representation.
 - `internal/analyzer` evaluates collected metrics and produces findings.
 - `internal/reporter` contains terminal, JSON, and standalone HTML report outputs; `internal/sanitizer` redacts selected identifiers.
-- `web` contains the JavaScript Infrastructure Explorer, and `main.py` provides its local development server.
 
 ## Engineering standards
 

@@ -40,7 +40,7 @@ func createTestReport() *models.DiagnosticReport {
 		UptimeSeconds: 86400,
 		BootTime:      time.Date(2026, 9, 15, 12, 0, 0, 0, time.UTC),
 		Virtualization: models.VirtualizationInfo{
-			IsVirtual:  false,
+			IsVirtual: false,
 		},
 	}
 	r.Data.CPU = &models.CPUMetrics{
@@ -229,5 +229,31 @@ func TestReporters_NoAnomaliesAndLimitations(t *testing.T) {
 	}
 	if !strings.Contains(htmlStr, "Collection Limitations &amp; Privilege Calls") {
 		t.Errorf("Expected 'Collection Limitations' section in HTML output")
+	}
+}
+func TestReporters_HTMLIsSelfContainedAndMatchesJSON(t *testing.T) {
+	report := createTestReport()
+	htmlRep, err := htmlReporter.NewReporter()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var h, j bytes.Buffer
+	if err = htmlRep.Generate(report, &h); err != nil {
+		t.Fatal(err)
+	}
+	if err = jsonReporter.NewReporter().Generate(report, &j); err != nil {
+		t.Fatal(err)
+	}
+	out := h.String()
+	for _, bad := range []string{"<script src=", "<link rel=\"stylesheet\" href=", "url(http", "fetch(", "XMLHttpRequest"} {
+		if strings.Contains(out, bad) {
+			t.Errorf("HTML has external runtime dependency marker %q", bad)
+		}
+	}
+	if !strings.Contains(out, "FINDING-CPU-001") || !strings.Contains(j.String(), "FINDING-CPU-001") {
+		t.Fatal("HTML and JSON do not contain the same diagnostic finding")
+	}
+	if !strings.Contains(out, "SRV-TEST-01") || !strings.Contains(j.String(), "SRV-TEST-01") {
+		t.Fatal("HTML and JSON do not contain the same host metadata")
 	}
 }

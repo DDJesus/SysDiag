@@ -94,7 +94,7 @@ func TestCanonicalContract(t *testing.T) {
 	}
 }
 func TestLegacyFixturesCanonicalSerialization(t *testing.T) {
-	for _, pattern := range []string{"../../test/fixtures/*.json", "../../web/samples/*.json"} {
+	for _, pattern := range []string{"../../test/fixtures/*.json", "../../test/legacy-fixtures/*.json"} {
 		paths, err := filepath.Glob(pattern)
 		if err != nil || len(paths) == 0 {
 			t.Fatalf("fixtures: %v", err)
