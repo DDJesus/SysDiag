@@ -60,10 +60,13 @@ func TestDiagnosticValidationScenarios(t *testing.T) {
 		{name: "cpu partial high measurement", probes: []collector.ProbeResult{validationProbe("cpu", collector.CategoryCPU, collector.StatusPartial, &models.CPUMetrics{UtilizationPercent: 96}, "one sample source unavailable")}, statuses: []collector.ProbeStatus{collector.StatusPartial}, findings: []expectedFinding{{"FINDING-CPU-001", models.SeverityCritical}}, expectedLimitations: 1},
 		{name: "memory normal", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusSuccess, &models.MemoryMetrics{TotalBytes: 16 * gib, AvailableBytes: 8 * gib, CommitLimitBytes: 20 * gib, CommitTotalBytes: 10 * gib, CommitPercent: 50}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}},
 		{name: "memory warning boundary", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusSuccess, &models.MemoryMetrics{TotalBytes: 8 * gib, AvailableBytes: 2 * gib, CommitLimitBytes: 10 * gib, CommitTotalBytes: 9 * gib, CommitPercent: 90}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityWarning}}, evidence: []expectedEvidence{{"FINDING-MEM-001", "commit_percent", float64(90)}}},
-		{name: "memory upper warning boundary", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusSuccess, &models.MemoryMetrics{TotalBytes: 8 * gib, AvailableBytes: 2 * gib, CommitLimitBytes: 10 * gib, CommitTotalBytes: 9490 * mib, CommitPercent: 94.9}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityWarning}}},
-		{name: "memory critical boundary", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusSuccess, &models.MemoryMetrics{TotalBytes: 8 * gib, AvailableBytes: 2 * gib, CommitLimitBytes: 10 * gib, CommitTotalBytes: 9500 * mib, CommitPercent: 95}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityCritical}}, evidence: []expectedEvidence{{"FINDING-MEM-001", "commit_percent", float64(95)}}},
+		{name: "memory upper warning boundary", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusSuccess, &models.MemoryMetrics{TotalBytes: 8 * gib, AvailableBytes: 2 * gib, CommitLimitBytes: 10000 * mib, CommitTotalBytes: 9490 * mib, CommitPercent: 94.9}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityWarning}}},
+		{name: "memory critical boundary", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusSuccess, &models.MemoryMetrics{TotalBytes: 8 * gib, AvailableBytes: 2 * gib, CommitLimitBytes: 10000 * mib, CommitTotalBytes: 9500 * mib, CommitPercent: 95}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityCritical}}, evidence: []expectedEvidence{{"FINDING-MEM-001", "commit_percent", float64(95)}}},
 		{name: "memory incomplete with zero total", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusPartial, &models.MemoryMetrics{AvailableBytes: 0}, "total memory measurement unavailable")}, statuses: []collector.ProbeStatus{collector.StatusPartial}, expectedLimitations: 1},
 		{name: "memory invalid availability above total", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusPartial, &models.MemoryMetrics{TotalBytes: gib, AvailableBytes: 2 * gib}, "inconsistent synthetic measurement")}, statuses: []collector.ProbeStatus{collector.StatusPartial}, expectedLimitations: 1},
+		{name: "invalid physical measurements with valid high commit", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusPartial, &models.MemoryMetrics{CommitLimitBytes: 10000 * mib, CommitTotalBytes: 9600 * mib, CommitPercent: 96}, "physical memory unavailable")}, statuses: []collector.ProbeStatus{collector.StatusPartial}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityCritical}}, evidence: []expectedEvidence{{"FINDING-MEM-001", "commit_percent", float64(96)}}, expectedLimitations: 1},
+		{name: "valid low physical memory without commit metrics", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusPartial, &models.MemoryMetrics{TotalBytes: 16 * gib, AvailableBytes: 256 * mib, UsedPercent: 98.4}, "commit metrics unavailable")}, statuses: []collector.ProbeStatus{collector.StatusPartial}, findings: []expectedFinding{{"FINDING-MEM-001", models.SeverityCritical}}, evidence: []expectedEvidence{{"FINDING-MEM-001", "available_gb", float64(0.25)}}, expectedLimitations: 1},
+		{name: "both memory measurements unavailable", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusPartial, &models.MemoryMetrics{}, "memory measurements unavailable")}, statuses: []collector.ProbeStatus{collector.StatusPartial}, expectedLimitations: 1},
 		{name: "memory unavailable", probes: []collector.ProbeResult{validationProbe("memory", collector.CategoryMemory, collector.StatusFailed, nil, "synthetic read failure")}, statuses: []collector.ProbeStatus{collector.StatusFailed}, expectedLimitations: 1},
 		{name: "storage healthy", probes: []collector.ProbeResult{validationProbe("storage", collector.CategoryStorage, collector.StatusSuccess, &models.StorageMetrics{Volumes: []models.VolumeMetrics{{MountPoint: "/validation", TotalBytes: 1000, FreeBytes: 250, UsedPercent: 75}}}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}},
 		{name: "storage warning boundary", probes: []collector.ProbeResult{validationProbe("storage", collector.CategoryStorage, collector.StatusSuccess, &models.StorageMetrics{Volumes: []models.VolumeMetrics{warningVolume}}, "")}, statuses: []collector.ProbeStatus{collector.StatusSuccess}, findings: []expectedFinding{{"FINDING-STORAGE-001", models.SeverityWarning}}, evidence: []expectedEvidence{{"FINDING-STORAGE-001", "used_percent", float64(90)}}},
@@ -173,6 +176,57 @@ func TestDiagnosticValidationSanitizationPreservesMeaning(t *testing.T) {
 	}
 	if strings.Contains(string(encoded), syntheticMAC) || strings.Contains(string(encoded), syntheticIP) || strings.Contains(string(encoded), "VALIDATION-NODE-001") {
 		t.Fatal("sanitized synthetic report retained an identifier")
+	}
+}
+
+func TestMemoryValidationSeparatesCommitAndPhysicalEvidence(t *testing.T) {
+	const mib = uint64(1024 * 1024)
+	const gib = uint64(1024 * 1024 * 1024)
+	tests := []struct {
+		name            string
+		metrics         *models.MemoryMetrics
+		wantTitle       string
+		wantEvidenceKey string
+		withoutEvidence []string
+		withoutText     string
+	}{
+		{
+			name:      "commit critical with unavailable physical memory",
+			metrics:   &models.MemoryMetrics{CommitLimitBytes: 10000 * mib, CommitTotalBytes: 9600 * mib, CommitPercent: 96},
+			wantTitle: "Critical virtual memory commit exhaustion", wantEvidenceKey: "commit_percent",
+			withoutEvidence: []string{"total_gb", "available_gb"}, withoutText: "available physical RAM",
+		},
+		{
+			name:      "physical critical with missing commit metrics",
+			metrics:   &models.MemoryMetrics{TotalBytes: 16 * gib, AvailableBytes: 256 * mib},
+			wantTitle: "Critical physical memory availability", wantEvidenceKey: "available_gb",
+			withoutEvidence: []string{"commit_total_gb", "commit_limit_gb", "commit_percent"}, withoutText: "commit",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			report := models.NewDiagnosticReport()
+			report.Data.Memory = tt.metrics
+			findings := analyzer.NewDefaultEngine().EvaluateAll(context.Background(), report)
+			if len(findings) != 1 {
+				t.Fatalf("finding count = %d, want 1", len(findings))
+			}
+			finding := findings[0]
+			if finding.Title != tt.wantTitle {
+				t.Errorf("title = %q, want %q", finding.Title, tt.wantTitle)
+			}
+			if _, ok := finding.Evidence[tt.wantEvidenceKey]; !ok {
+				t.Errorf("evidence is missing %q", tt.wantEvidenceKey)
+			}
+			for _, key := range tt.withoutEvidence {
+				if _, ok := finding.Evidence[key]; ok {
+					t.Errorf("evidence unexpectedly contains unavailable measurement %q", key)
+				}
+			}
+			if strings.Contains(strings.ToLower(finding.Observation), tt.withoutText) {
+				t.Errorf("observation claims unavailable measurement %q", tt.withoutText)
+			}
+		})
 	}
 }
 

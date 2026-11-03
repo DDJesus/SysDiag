@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/systemdiag/sysdiag/internal/models"
 )
@@ -95,60 +96,79 @@ func (r *MemoryCommitExhaustionRule) Evaluate(_ context.Context, report *models.
 	}
 
 	mem := report.Data.Memory
-	if mem.TotalBytes == 0 || mem.AvailableBytes > mem.TotalBytes {
-		return nil, nil
-	}
-	var findings []models.Finding
-
 	toGB := func(b uint64) float64 {
 		return math.Round((float64(b)/(1024*1024*1024))*100) / 100
 	}
 
-	availMB := mem.AvailableBytes / (1024 * 1024)
+	physicalValid := mem.TotalBytes > 0 && mem.AvailableBytes <= mem.TotalBytes
+	commitValid := mem.CommitLimitBytes > 0 && !math.IsNaN(mem.CommitPercent) && !math.IsInf(mem.CommitPercent, 0) && mem.CommitPercent >= 0
+	if commitValid {
+		percentFromBytes := float64(mem.CommitTotalBytes) / float64(mem.CommitLimitBytes) * 100
+		commitValid = !math.IsNaN(percentFromBytes) && !math.IsInf(percentFromBytes, 0) && math.Abs(percentFromBytes-mem.CommitPercent) <= 0.11
+	}
+	physicalCritical, physicalWarning := false, false
+	if physicalValid {
+		availableMB := mem.AvailableBytes / (1024 * 1024)
+		physicalCritical = availableMB < 500
+		physicalWarning = availableMB < 1024
+	}
+	commitCritical := commitValid && mem.CommitPercent >= 95.0
+	commitWarning := commitValid && mem.CommitPercent >= 90.0
 
-	if mem.CommitPercent >= 95.0 || availMB < 500 {
-		findings = append(findings, models.Finding{
-			ID:          "FINDING-MEM-001",
-			Category:    "memory",
-			Severity:    models.SeverityCritical,
-			Title:       "Critical virtual memory commit exhaustion",
-			Observation: fmt.Sprintf("Commit charge reached %.1f%% (%.2f GB of %.2f GB limit) with %.2f GB available physical RAM.", mem.CommitPercent, toGB(mem.CommitTotalBytes), toGB(mem.CommitLimitBytes), toGB(mem.AvailableBytes)),
-			Evidence: map[string]interface{}{
-				"total_gb":                   toGB(mem.TotalBytes),
-				"available_gb":               toGB(mem.AvailableBytes),
-				"used_percent":               mem.UsedPercent,
-				"commit_total_gb":            toGB(mem.CommitTotalBytes),
-				"commit_limit_gb":            toGB(mem.CommitLimitBytes),
-				"commit_percent":             mem.CommitPercent,
-				"threshold_critical_percent": 95.0,
-			},
-			Interpretation:  "The system is operating with minimal remaining commit capacity relative to the current commit limit.",
-			PotentialImpact: "Applications requesting new virtual memory allocations may fail if commit capacity is fully exhausted.",
-			Recommendation:  "Inspect memory consumption by individual processes to identify primary consumers and close or optimize high-usage tasks.",
-			Confidence:      models.ConfidenceHigh,
-		})
-	} else if mem.CommitPercent >= 90.0 || availMB < 1024 {
-		findings = append(findings, models.Finding{
-			ID:          "FINDING-MEM-001",
-			Category:    "memory",
-			Severity:    models.SeverityWarning,
-			Title:       "Elevated memory commit pressure detected",
-			Observation: fmt.Sprintf("Commit charge reached %.1f%% (%.2f GB of %.2f GB limit) with %.2f GB available physical RAM.", mem.CommitPercent, toGB(mem.CommitTotalBytes), toGB(mem.CommitLimitBytes), toGB(mem.AvailableBytes)),
-			Evidence: map[string]interface{}{
-				"total_gb":                  toGB(mem.TotalBytes),
-				"available_gb":              toGB(mem.AvailableBytes),
-				"used_percent":              mem.UsedPercent,
-				"commit_total_gb":           toGB(mem.CommitTotalBytes),
-				"commit_limit_gb":           toGB(mem.CommitLimitBytes),
-				"commit_percent":            mem.CommitPercent,
-				"threshold_warning_percent": 90.0,
-			},
-			Interpretation:  "The system is operating with elevated commit utilization relative to the current commit limit.",
-			PotentialImpact: "Available memory headroom for workload spikes is constrained.",
-			Recommendation:  "Review active processes for elevated memory consumption and track usage trends.",
-			Confidence:      models.ConfidenceHigh,
-		})
+	severity := models.Severity("")
+	if commitCritical || physicalCritical {
+		severity = models.SeverityCritical
+	} else if commitWarning || physicalWarning {
+		severity = models.SeverityWarning
+	} else {
+		return nil, nil
 	}
 
-	return findings, nil
+	evidence := make(map[string]interface{})
+	var observations, interpretations, impacts []string
+	title := "Low available physical memory"
+	if commitWarning || commitCritical {
+		evidence["commit_total_gb"] = toGB(mem.CommitTotalBytes)
+		evidence["commit_limit_gb"] = toGB(mem.CommitLimitBytes)
+		evidence["commit_percent"] = mem.CommitPercent
+		if commitCritical {
+			evidence["threshold_critical_percent"] = 95.0
+			title = "Critical virtual memory commit exhaustion"
+		} else {
+			evidence["threshold_warning_percent"] = 90.0
+			title = "Elevated memory commit pressure detected"
+		}
+		observations = append(observations, fmt.Sprintf("Commit charge reached %.1f%% (%.2f GB of %.2f GB limit)", mem.CommitPercent, toGB(mem.CommitTotalBytes), toGB(mem.CommitLimitBytes)))
+		interpretations = append(interpretations, "Commit utilization is elevated relative to the current commit limit.")
+		impacts = append(impacts, "Applications requesting virtual memory may fail if commit capacity is exhausted.")
+	}
+	if physicalWarning || physicalCritical {
+		evidence["total_gb"] = toGB(mem.TotalBytes)
+		evidence["available_gb"] = toGB(mem.AvailableBytes)
+		evidence["used_percent"] = mem.UsedPercent
+		if physicalCritical {
+			evidence["threshold_available_critical_mb"] = 500
+			if !commitCritical {
+				title = "Critical physical memory availability"
+			}
+		} else {
+			evidence["threshold_available_warning_mb"] = 1024
+		}
+		observations = append(observations, fmt.Sprintf("Available physical memory measured %.2f GB of %.2f GB total", toGB(mem.AvailableBytes), toGB(mem.TotalBytes)))
+		interpretations = append(interpretations, "Available physical memory is low relative to the installed total.")
+		impacts = append(impacts, "Applications may have reduced physical memory headroom for new or expanding workloads.")
+	}
+
+	return []models.Finding{{
+		ID:              "FINDING-MEM-001",
+		Category:        "memory",
+		Severity:        severity,
+		Title:           title,
+		Observation:     strings.Join(observations, "; ") + ".",
+		Evidence:        evidence,
+		Interpretation:  strings.Join(interpretations, " "),
+		PotentialImpact: strings.Join(impacts, " "),
+		Recommendation:  "Review memory consumption by active processes and monitor available capacity.",
+		Confidence:      models.ConfidenceHigh,
+	}}, nil
 }

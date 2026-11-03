@@ -642,7 +642,7 @@ func TestRuleEngine_CommitThreshold_94_9_Percent_BelowCritical(t *testing.T) {
 		UsedBytes:        14 * 1024 * 1024 * 1024,
 		UsedPercent:      87.5,
 		CommitLimitBytes: 16 * 1024 * 1024 * 1024,
-		CommitTotalBytes: 15552390758, // 94.9%
+		CommitTotalBytes: 16303695856, // 94.9%
 		CommitPercent:    94.9,
 	}
 
@@ -670,7 +670,7 @@ func TestRuleEngine_CommitThreshold_95_0_Percent_ExactCritical(t *testing.T) {
 		UsedBytes:        14 * 1024 * 1024 * 1024,
 		UsedPercent:      87.5,
 		CommitLimitBytes: 16 * 1024 * 1024 * 1024,
-		CommitTotalBytes: 15569256448, // 95.0%
+		CommitTotalBytes: 16320875725, // 95.0%
 		CommitPercent:    95.0,
 	}
 
@@ -759,11 +759,11 @@ func TestRuleEngine_HighProcessMemory_NormalSystemMemory_NoSystemPressure(t *tes
 		TotalThreads:   2000,
 		TopMemory: []models.ProcessSummary{
 			{
-				PID:              4096,
-				Name:             "database_engine.exe",
-				WorkingSetBytes:  10 * 1024 * 1024 * 1024,
-				PrivateBytes:     10 * 1024 * 1024 * 1024,
-				ExecutablePath:   "C:\\Program Files\\DB\\database_engine.exe",
+				PID:             4096,
+				Name:            "database_engine.exe",
+				WorkingSetBytes: 10 * 1024 * 1024 * 1024,
+				PrivateBytes:    10 * 1024 * 1024 * 1024,
+				ExecutablePath:  "C:\\Program Files\\DB\\database_engine.exe",
 			},
 		},
 	}
@@ -812,7 +812,7 @@ func TestRuleEngine_HighSystemMemory_HighProcessMemory_CorrelatesStrictEvidence(
 		UsedBytes:        14800 * 1024 * 1024,
 		UsedPercent:      90.3,
 		CommitLimitBytes: 18 * 1024 * 1024 * 1024,
-		CommitTotalBytes: 17280 * 1024 * 1024, // 96.0%
+		CommitTotalBytes: 18 * 1024 * 1024 * 1024 * 96 / 100, // 96.0%
 		CommitPercent:    96.0,
 	}
 
