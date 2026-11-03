@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5
         with:
-          go-version-file: go.mod
+          go-version: '1.22.x'
           cache: true
       - name: Run tests with race detector
         run: go test -race ./...
@@ -41,15 +41,51 @@ jobs:
             goarch: amd64
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5
         with:
-          go-version-file: go.mod
+          go-version: '1.22.x'
           cache: true
       - name: Compile CLI
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
-        run: go build ./cmd/sysdiag
+        run: go build -o sysdiag${{ matrix.goos == 'windows' && '.exe' || '' }} ./cmd/sysdiag
+
+  package-windows:
+    name: Package temporary Windows PR build
+    needs: [test, cross-build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Set up Go
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5
+        with:
+          go-version: '1.22.x'
+      - name: Build Windows executable
+        env:
+          GOOS: windows
+          GOARCH: amd64
+          CGO_ENABLED: 0
+        run: go build -trimpath -o sysdiag.exe ./cmd/sysdiag
+      - name: Prepare package and checksum
+        run: |
+          mkdir -p package
+          cp sysdiag.exe README.md package/
+          (cd package && zip ../sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip sysdiag.exe README.md)
+          sha256sum sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip > sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip.sha256
+          unzip -l sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip
+          sha256sum -c sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip.sha256
+      - name: Upload temporary PR artifact
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        with:
+          name: sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}
+          path: |
+            sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip
+            sysdiag-windows-amd64-pr-${{ github.event.pull_request.number }}.zip.sha256
+          retention-days: 7
