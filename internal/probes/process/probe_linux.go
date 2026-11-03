@@ -6,8 +6,10 @@ package process
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"math"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -18,7 +20,10 @@ import (
 	"github.com/systemdiag/sysdiag/internal/models"
 )
 
-func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
+func (p *Probe) collect(ctx context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, collector.StatusCanceled, err
+	}
 	procDir := "/proc"
 	entries, err := os.ReadDir(procDir)
 	if err != nil {
@@ -26,6 +31,7 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 	}
 
 	bootTime := readBootTime()
+	clockTicks, clockErr := linuxClockTicks(ctx)
 	pageSize := uint64(os.Getpagesize())
 	if pageSize == 0 {
 		pageSize = 4096
@@ -33,8 +39,14 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 
 	var list []models.ProcessSummary
 	totalThreads := 0
+	malformed := 0
+	denied := 0
 
 	for _, entry := range entries {
+		if err := ctx.Err(); err != nil {
+			metrics := buildProcessMetrics(list, totalThreads, clockErr == nil)
+			return metrics, collector.StatusPartial, fmt.Errorf("process enumeration canceled after partial results: %w", err)
+		}
 		if !entry.IsDir() {
 			continue
 		}
@@ -47,28 +59,19 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 		pidDir := filepath.Join(procDir, pidStr)
 		statData, err := os.ReadFile(filepath.Join(pidDir, "stat"))
 		if err != nil {
+			if os.IsPermission(err) {
+				denied++
+			}
 			continue
 		}
 
-		statStr := string(statData)
-		lastParen := strings.LastIndex(statStr, ")")
-		firstParen := strings.Index(statStr, "(")
-		if firstParen == -1 || lastParen == -1 || lastParen <= firstParen {
+		record, parseErr := parseLinuxProcessStat(string(statData))
+		if parseErr != nil {
+			malformed++
 			continue
 		}
-
-		comm := statStr[firstParen+1 : lastParen]
-		rest := strings.Fields(statStr[lastParen+1:])
-		if len(rest) < 22 {
-			continue
-		}
-
-		ppid, _ := strconv.ParseUint(rest[1], 10, 32)
-		utime, _ := strconv.ParseUint(rest[11], 10, 64)
-		stime, _ := strconv.ParseUint(rest[12], 10, 64)
-		threads, _ := strconv.ParseUint(rest[17], 10, 32)
-		startTimeTicks, _ := strconv.ParseUint(rest[19], 10, 64)
-		rssPages, _ := strconv.ParseUint(rest[21], 10, 64)
+		ppid, utime, stime := record.ppid, record.utime, record.stime
+		threads, startTimeTicks, rssPages := record.threads, record.startTicks, record.rssPages
 
 		if threads == 0 {
 			threads = 1
@@ -76,11 +79,14 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 		totalThreads += int(threads)
 
 		workingSet := rssPages * pageSize
-		cpuTimeSec := float64(utime+stime) / 100.0 // Linux USER_HZ default is 100
+		var cpuTimeSec float64
+		if clockErr == nil {
+			cpuTimeSec, _ = ticksToSeconds(utime+stime, clockTicks)
+		}
 
 		var startTime *time.Time
-		if !bootTime.IsZero() && startTimeTicks > 0 {
-			st := bootTime.Add(time.Duration(float64(startTimeTicks)/100.0 * float64(time.Second))).UTC()
+		if clockErr == nil && !bootTime.IsZero() && startTimeTicks > 0 {
+			st := bootTime.Add(time.Duration(float64(startTimeTicks) / float64(clockTicks) * float64(time.Second))).UTC()
 			startTime = &st
 		}
 
@@ -91,7 +97,7 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 		list = append(list, models.ProcessSummary{
 			PID:             uint32(pid),
 			PPID:            uint32(ppid),
-			Name:            comm,
+			Name:            record.comm,
 			ExecutablePath:  exePath,
 			ThreadCount:     uint32(threads),
 			WorkingSetBytes: workingSet,
@@ -101,6 +107,99 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 		})
 	}
 
+	metrics := buildProcessMetrics(list, totalThreads, clockErr == nil)
+	if ctx.Err() != nil {
+		return metrics, collector.StatusPartial, fmt.Errorf("process enumeration canceled after partial results: %w", ctx.Err())
+	}
+	if clockErr != nil {
+		return metrics, collector.StatusPartial, fmt.Errorf("process CPU time and start time unavailable: %w", clockErr)
+	}
+	if bootTime.IsZero() {
+		return metrics, collector.StatusPartial, fmt.Errorf("process start times unavailable: could not read /proc/uptime")
+	}
+	if malformed > 0 {
+		return metrics, collector.StatusPartial, fmt.Errorf("skipped %d malformed /proc process-stat records", malformed)
+	}
+	if denied > 0 {
+		return metrics, collector.StatusPartial, fmt.Errorf("permission denied reading %d /proc process-stat records", denied)
+	}
+	return metrics, collector.StatusSuccess, nil
+}
+
+func ticksToSeconds(ticks, clockTicks uint64) (float64, bool) {
+	if clockTicks == 0 {
+		return 0, false
+	}
+	return float64(ticks) / float64(clockTicks), true
+}
+
+type linuxProcessStat struct {
+	comm                               string
+	ppid, threads                      uint64
+	utime, stime, startTicks, rssPages uint64
+}
+
+// Linux comm is parenthesized but may itself contain spaces and parentheses;
+// the final right parenthesis marks the end of the comm field.
+func parseLinuxProcessStat(stat string) (linuxProcessStat, error) {
+	first := strings.IndexByte(stat, '(')
+	last := strings.LastIndexByte(stat, ')')
+	if first < 0 || last <= first || len(stat[last+1:]) == 0 {
+		return linuxProcessStat{}, fmt.Errorf("invalid stat comm field")
+	}
+	fields := strings.Fields(stat[last+1:])
+	if len(fields) < 22 {
+		return linuxProcessStat{}, fmt.Errorf("stat has %d fields after comm, want at least 22", len(fields))
+	}
+	parse := func(index int, name string) (uint64, error) {
+		value, err := strconv.ParseUint(fields[index], 10, 64)
+		if err != nil {
+			return 0, fmt.Errorf("invalid %s: %w", name, err)
+		}
+		return value, nil
+	}
+	var out linuxProcessStat
+	out.comm = stat[first+1 : last]
+	var err error
+	if out.ppid, err = parse(1, "ppid"); err != nil {
+		return out, err
+	}
+	if out.utime, err = parse(11, "utime"); err != nil {
+		return out, err
+	}
+	if out.stime, err = parse(12, "stime"); err != nil {
+		return out, err
+	}
+	if out.threads, err = parse(17, "threads"); err != nil {
+		return out, err
+	}
+	if out.startTicks, err = parse(19, "starttime"); err != nil {
+		return out, err
+	}
+	if out.rssPages, err = parse(21, "rss"); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
+func linuxClockTicks(ctx context.Context) (uint64, error) {
+	path, err := exec.LookPath("getconf")
+	if err != nil {
+		return 0, err
+	}
+	cmd := exec.CommandContext(ctx, path, "CLK_TCK")
+	output, err := cmd.Output()
+	if err != nil {
+		return 0, fmt.Errorf("getconf CLK_TCK: %w", err)
+	}
+	ticks, err := strconv.ParseUint(strings.TrimSpace(string(output)), 10, 64)
+	if err != nil || ticks == 0 {
+		return 0, fmt.Errorf("invalid getconf CLK_TCK result %q", strings.TrimSpace(string(output)))
+	}
+	return ticks, nil
+}
+
+func buildProcessMetrics(list []models.ProcessSummary, totalThreads int, cpuTimeAvailable bool) *models.ProcessMetrics {
 	totalProcs := len(list)
 
 	// Sort Top Memory
@@ -114,25 +213,26 @@ func (p *Probe) collect(_ context.Context, _ time.Duration) (interface{}, collec
 		topMemCount = len(memList)
 	}
 
-	// Sort Top CPU Time
-	cpuList := make([]models.ProcessSummary, len(list))
-	copy(cpuList, list)
-	sort.Slice(cpuList, func(i, j int) bool {
-		return cpuList[i].CPUTimeSeconds > cpuList[j].CPUTimeSeconds
-	})
-	topCPUCount := 5
-	if len(cpuList) < topCPUCount {
-		topCPUCount = len(cpuList)
+	topCPU := make([]models.ProcessSummary, 0)
+	if cpuTimeAvailable {
+		cpuList := make([]models.ProcessSummary, len(list))
+		copy(cpuList, list)
+		sort.Slice(cpuList, func(i, j int) bool {
+			return cpuList[i].CPUTimeSeconds > cpuList[j].CPUTimeSeconds
+		})
+		topCPUCount := 5
+		if len(cpuList) < topCPUCount {
+			topCPUCount = len(cpuList)
+		}
+		topCPU = cpuList[:topCPUCount]
 	}
 
-	metrics := &models.ProcessMetrics{
+	return &models.ProcessMetrics{
 		TotalProcesses: totalProcs,
 		TotalThreads:   totalThreads,
-		TopCPU:         cpuList[:topCPUCount],
+		TopCPU:         topCPU,
 		TopMemory:      memList[:topMemCount],
 	}
-
-	return metrics, collector.StatusSuccess, nil
 }
 
 func readProcessPrivateBytes(pidDir string) uint64 {
@@ -167,17 +267,17 @@ func readProcessPrivateBytes(pidDir string) uint64 {
 func readBootTime() time.Time {
 	data, err := os.ReadFile("/proc/uptime")
 	if err != nil {
-		return time.Now().UTC()
+		return time.Time{}
 	}
 
 	fields := strings.Fields(string(data))
 	if len(fields) == 0 {
-		return time.Now().UTC()
+		return time.Time{}
 	}
 
 	uptimeFloat, err := strconv.ParseFloat(fields[0], 64)
 	if err != nil {
-		return time.Now().UTC()
+		return time.Time{}
 	}
 
 	return time.Now().Add(-time.Duration(uptimeFloat * float64(time.Second))).UTC().Truncate(time.Second)

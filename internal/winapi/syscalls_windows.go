@@ -6,6 +6,7 @@ package winapi
 import (
 	"context"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"os"
 	"sort"
@@ -202,13 +203,13 @@ func IsProcessElevated() (bool, error) {
 
 // DriveType constants
 const (
-	DriveUnknown     = 0
-	DriveNoRootDir   = 1
-	DriveRemovable   = 2
-	DriveFixed       = 3
-	DriveRemote      = 4
-	DriveCDROM       = 5
-	DriveRAMDisk     = 6
+	DriveUnknown   = 0
+	DriveNoRootDir = 1
+	DriveRemovable = 2
+	DriveFixed     = 3
+	DriveRemote    = 4
+	DriveCDROM     = 5
+	DriveRAMDisk   = 6
 )
 
 // VolumeInfo describes logical storage volume metrics.
@@ -499,33 +500,33 @@ func mapBusType(bt uint32) string {
 
 // Network structs & API bindings
 type IPAdapterAddresses struct {
-	Length                uint32
-	IfIndex               uint32
-	Next                  *IPAdapterAddresses
-	AdapterName           *byte
-	FirstUnicastAddress   *IPAdapterUnicastAddress
-	FirstAnycastAddress   uintptr
-	FirstMulticastAddress uintptr
-	FirstDnsServerAddress *IPAdapterDnsServerAddress
-	DnsSuffix             *uint16
-	Description           *uint16
-	FriendlyName          *uint16
-	PhysicalAddress       [8]byte
-	PhysicalAddressLength uint32
-	Flags                 uint32
-	Mtu                   uint32
-	IfType                uint32
-	OperStatus            uint32
-	Ipv6IfIndex           uint32
-	ZoneIndices           [16]uint32
-	FirstPrefix           uintptr
-	TransmitLinkSpeed     uint64
-	ReceiveLinkSpeed      uint64
+	Length                 uint32
+	IfIndex                uint32
+	Next                   *IPAdapterAddresses
+	AdapterName            *byte
+	FirstUnicastAddress    *IPAdapterUnicastAddress
+	FirstAnycastAddress    uintptr
+	FirstMulticastAddress  uintptr
+	FirstDnsServerAddress  *IPAdapterDnsServerAddress
+	DnsSuffix              *uint16
+	Description            *uint16
+	FriendlyName           *uint16
+	PhysicalAddress        [8]byte
+	PhysicalAddressLength  uint32
+	Flags                  uint32
+	Mtu                    uint32
+	IfType                 uint32
+	OperStatus             uint32
+	Ipv6IfIndex            uint32
+	ZoneIndices            [16]uint32
+	FirstPrefix            uintptr
+	TransmitLinkSpeed      uint64
+	ReceiveLinkSpeed       uint64
 	FirstWinsServerAddress uintptr
-	FirstGatewayAddress   *IPAdapterGatewayAddress
-	Ipv4Metric            uint32
-	Ipv6Metric            uint32
-	Luid                  uint64
+	FirstGatewayAddress    *IPAdapterGatewayAddress
+	Ipv4Metric             uint32
+	Ipv6Metric             uint32
+	Luid                   uint64
 }
 
 type IPAdapterUnicastAddress struct {
@@ -845,7 +846,7 @@ func stringsJoin(parts []string, sep string) string {
 
 // Process enumeration structures
 const (
-	TH32CS_SNAPPROCESS               = 0x00000002
+	TH32CS_SNAPPROCESS                = 0x00000002
 	PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
 )
 
@@ -1207,8 +1208,8 @@ type rawEvent struct {
 		Provider struct {
 			Name string `xml:"Name,attr"`
 		} `xml:"Provider"`
-		EventID     int    `xml:"EventID"`
-		Level       int    `xml:"Level"`
+		EventID     int `xml:"EventID"`
+		Level       int `xml:"Level"`
 		TimeCreated struct {
 			SystemTime string `xml:"SystemTime,attr"`
 		} `xml:"TimeCreated"`
@@ -1225,6 +1226,9 @@ type rawEvent struct {
 
 // GetReliabilityEvents queries Windows Event Log (System and Application channels) for critical reliability issues.
 func GetReliabilityEvents(ctx context.Context, timeWindowHours int, maxRecords int) (*models.ReliabilityMetrics, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	metrics := &models.ReliabilityMetrics{
 		TimeWindowHours:   timeWindowHours,
 		AppCrashes:        make([]models.AppCrashEvent, 0),
@@ -1241,8 +1245,8 @@ func GetReliabilityEvents(ctx context.Context, timeWindowHours int, maxRecords i
 	systemQuery := fmt.Sprintf(`*[System[(Level=1 or Level=2 or Level=3 or EventID=41 or EventID=1001 or EventID=7000 or EventID=7001 or EventID=7023 or EventID=7034) and TimeCreated[timediff(@SystemTime) <= %d]]]`, windowMs)
 	appQuery := fmt.Sprintf(`*[System[(Level=1 or Level=2 or EventID=1000 or EventID=1001 or EventID=1002) and TimeCreated[timediff(@SystemTime) <= %d]]]`, windowMs)
 
-	sysEvents, _ := queryEventChannel("System", systemQuery, maxRecords/2)
-	appEvents, _ := queryEventChannel("Application", appQuery, maxRecords/2)
+	sysEvents, sysErr := queryEventChannel(ctx, "System", systemQuery, maxRecords/2)
+	appEvents, appErr := queryEventChannel(ctx, "Application", appQuery, maxRecords/2)
 
 	allEvents := append(sysEvents, appEvents...)
 	metrics.TotalErrorsLogged = len(allEvents)
@@ -1325,10 +1329,19 @@ func GetReliabilityEvents(ctx context.Context, timeWindowHours int, maxRecords i
 		})
 	}
 
+	if err := ctx.Err(); err != nil {
+		return metrics, err
+	}
+	if sysErr != nil || appErr != nil {
+		return metrics, errors.Join(sysErr, appErr)
+	}
 	return metrics, nil
 }
 
-func queryEventChannel(channel string, query string, maxRecords int) ([]rawEvent, error) {
+func queryEventChannel(ctx context.Context, channel string, query string, maxRecords int) ([]rawEvent, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	chanPtr, _ := syscall.UTF16PtrFromString(channel)
 	queryPtr, _ := syscall.UTF16PtrFromString(query)
 
@@ -1348,8 +1361,11 @@ func queryEventChannel(channel string, query string, maxRecords int) ([]rawEvent
 	hEvents := make([]syscall.Handle, batchSize)
 
 	for len(events) < maxRecords {
+		if err := ctx.Err(); err != nil {
+			return events, err
+		}
 		var returned uint32
-		ret, _, _ := procEvtNext.Call(
+		ret, _, callErr := procEvtNext.Call(
 			hQuery,
 			uintptr(batchSize),
 			uintptr(unsafe.Pointer(&hEvents[0])),
@@ -1357,15 +1373,30 @@ func queryEventChannel(channel string, query string, maxRecords int) ([]rawEvent
 			0,
 			uintptr(unsafe.Pointer(&returned)),
 		)
-		if ret == 0 || returned == 0 {
+		if ret == 0 {
+			done, err := classifyEventLogNextResult(ret, callErr)
+			if done {
+				break
+			}
+			return events, err
+		}
+		if returned == 0 {
 			break
 		}
 
 		for i := 0; i < int(returned); i++ {
+			if err := ctx.Err(); err != nil {
+				for j := i; j < int(returned); j++ {
+					procEvtClose.Call(uintptr(hEvents[j]))
+				}
+				return events, err
+			}
 			hEv := hEvents[i]
 			var bufferUsed uint32
 			var propCount uint32
 
+			// EvtRender has no cancellation parameter. Cancellation is observed
+			// before the next event batch; this native call itself is synchronous.
 			procEvtRender.Call(
 				0,
 				uintptr(hEv),

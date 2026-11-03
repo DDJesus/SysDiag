@@ -33,6 +33,21 @@ type completionProbe struct {
 	returned chan<- struct{}
 }
 
+type partialTimeoutProbe struct{}
+
+func (partialTimeoutProbe) ID() string                        { return "partial-timeout" }
+func (partialTimeoutProbe) Name() string                      { return "partial-timeout" }
+func (partialTimeoutProbe) Category() collector.ProbeCategory { return collector.CategorySystem }
+func (partialTimeoutProbe) RequiredPrivilege() collector.PrivilegeLevel {
+	return collector.PrivilegeUser
+}
+func (partialTimeoutProbe) SupportedProfiles() []string { return []string{"all"} }
+func (partialTimeoutProbe) Run(ctx context.Context, _ time.Duration) (interface{}, collector.ProbeStatus, error) {
+	data := &models.SystemMetrics{Hostname: "partial"}
+	<-ctx.Done()
+	return data, collector.StatusPartial, ctx.Err()
+}
+
 func (p *controlledProbe) ID() string                        { return p.id }
 func (p *controlledProbe) Name() string                      { return p.id }
 func (p *controlledProbe) Category() collector.ProbeCategory { return collector.CategorySystem }
@@ -242,6 +257,19 @@ func TestEngine_CooperativeProbeTimeout(t *testing.T) {
 	}
 	if len(results) != 1 || results[0].Status != collector.StatusTimeout {
 		t.Fatalf("got results %#v, want one Timeout result", results)
+	}
+}
+
+func TestEngine_TimeoutPreservesPartialData(t *testing.T) {
+	results := collector.NewEngine(collector.WithProbeTimeout(10*time.Millisecond)).Execute(
+		context.Background(), []collector.Probe{partialTimeoutProbe{}}, 0,
+	)
+	if len(results) != 1 || results[0].Status != collector.StatusTimeout {
+		t.Fatalf("got %#v, want one Timeout result", results)
+	}
+	data, ok := results[0].Data.(*models.SystemMetrics)
+	if !ok || data.Hostname != "partial" {
+		t.Fatalf("timeout data = %#v, want partial system metrics", results[0].Data)
 	}
 }
 
