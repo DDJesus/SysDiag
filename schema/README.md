@@ -26,7 +26,7 @@ Go modules (including its transitive text module). CI's existing Go test job run
 these tests. Tests cover both serialization APIs, populated synthetic models,
 optional subsystems, nulls, types, enums, versions and required fields.
 
-All nine existing JSON fixtures are historical Explorer inputs: each lacks
+All nine existing JSON fixtures are historical sanitized report inputs: each lacks
 `collection_status.canceled` and `collection_status.skipped`. Additionally,
 `network_down_virtual_adapter.json` lacks `data.system.boot_time`, and
 `unclassified_storage_warning_event.json` lacks `data.reliability.bugchecks`.
@@ -43,10 +43,9 @@ changes requiring explicit approval and a versioned contract. Keep serialization
 this schema, contract tests and consumer compatibility cases together in review.
 Do not maintain another independent canonical schema.
 
-## Future work (separate branch and PR)
+## Optional external consumers
 
-Investigate Explorer/Python retirement in the context of SysDiag's standalone
-HTML/JSON outputs and future Cayde ingestion. If retaining a local Explorer is
-justified, evaluate a Go-native localhost server using `net/http` and embedded
-static assets as a replacement for `main.py`. Decide the product direction before
-implementation; this schema change does not add a server or retire any files.
+The JSON contract can be used by independently developed tools that choose to
+read SysDiag report files. SysDiag does not ship, configure or require such a
+consumer. Consumer-specific integration proposals should be evaluated separately
+and must preserve the versioned report contract.
