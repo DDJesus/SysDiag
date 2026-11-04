@@ -151,7 +151,7 @@ func TestNormalizedOutputContractAllDomains(t *testing.T) {
 		t.Fatalf("report is not valid JSON: %v", err)
 	}
 
-	// Verify top-level contract fields required by Cayde Core
+	// Verify top-level fields required by the current report contract
 	requiredFields := []string{"$schema", "schema_version", "metadata", "collection_status", "data", "findings", "limitations"}
 	for _, field := range requiredFields {
 		if _, ok := jsonMap[field]; !ok {
