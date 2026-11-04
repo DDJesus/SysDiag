@@ -1,6 +1,6 @@
 # SysDiag
 
-SysDiag is a portable, read-only Go diagnostic utility. It collects and analyzes system observations and generates canonical JSON and a self-contained HTML report. The executable requires no Python, Node.js, web server, or external report assets. Reports remain local; SysDiag does not upload data to Cayde.
+SysDiag is a standalone, read-only diagnostic CLI written in Go. It collects and analyzes locally available system observations on Windows, macOS, and Linux, then generates canonical JSON and a self-contained HTML report. Probe coverage varies by platform. SysDiag has no dependency on or built-in integration with any external application. Reports are written locally; SysDiag does not upload them. The executable requires no Python, Node.js, web server, or external report assets.
 
 ## Build
 
@@ -23,6 +23,10 @@ Double-click `sysdiag.exe` on Windows or run it from a terminal. By default, rep
 ```
 
 `--json-only` writes canonical JSON to stdout for pipelines. Normal runs produce JSON and standalone HTML unless `--no-html` is supplied. The HTML file can be opened directly in a browser; no server or network connection is required.
+
+### Using the reports
+
+The JSON report is the machine-readable output and follows the versioned contract in [schema/v1.json](schema/v1.json). Save it as a file for later analysis or use `--json-only` to send it to a command-line pipeline. The HTML report is a self-contained view of the same diagnostic run that can be opened in a browser without a server. These are output formats only: SysDiag does not include a hosted service, dashboard, or integration with another application. External scripts or tools may consume the JSON file if desired; users choose and configure any such consumers themselves.
 
 `--sanitize` is opt-in. It replaces hostnames, account names/domains, disk
 serials, MAC addresses, IP addresses, and user-directory components with stable
